@@ -8,32 +8,35 @@ import {
   UsePipes,
   ValidationPipe,
   Put,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { ClientsService } from '../service/clients.service';
 import { NewClientDto } from '../clientDto/newClient.dto';
 import { updateAssignedEaserDto } from '../clientDto/updateAssignedEaser.dto';
 import { AddressDto } from 'src/clients/clientDto/address.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/shared/roles.enum';
 
 @Controller('clients')
 export class ClientsController {
   constructor(private clientService: ClientsService) {}
 
+  @UseGuards(AuthGuard)
+  @Roles(Role.ADMIN, Role.CLIENT)
   @Get()
   getClients() {
     return this.clientService.getAllClients();
   }
 
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(AuthGuard)
   @Get(':id')
   getOneClient(@Param('id') id: string) {
     return this.clientService.getOneClient(id);
   }
 
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(AuthGuard)
   @Get('state/:state/city/:city')
   getClientsBasedOnLocation(
     @Param('state') state: string,
@@ -42,18 +45,17 @@ export class ClientsController {
     return this.clientService.getClientsBasedOnLocation(state, city);
   }
 
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(AuthGuard)
   @Get('city/:city')
   getClientsBasedOnCity(@Param('city') city: string) {
     return this.clientService.getClientsBasedOnCity(city);
   }
 
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(AuthGuard)
   @Get('state/:state')
   getClientsBasedOnState(@Param('state') state: string) {
     return this.clientService.getClientsBasedOnState(state);
   }
-
 
   @Post('new-client')
   @UsePipes(new ValidationPipe())
@@ -61,7 +63,7 @@ export class ClientsController {
     return this.clientService.createClientAccount(body);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard)
   // save and update clients address
   @Put(':clientId/save_address')
   updateClientAddress(
@@ -80,7 +82,7 @@ export class ClientsController {
     return this.clientService.assignEaserToClient(clientId, body);
   }
 
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(AuthGuard)
   @Delete()
   deleteClientAccount(id: string) {
     return this.clientService.deleteClient(id);

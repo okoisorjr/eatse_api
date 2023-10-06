@@ -1,36 +1,62 @@
-import { Prop, Schema, SchemaFactory, raw } from "@nestjs/mongoose";
-import * as mongoose from "mongoose";
-import { Client } from "src/clients/schema/client.schema";
-import { Easer } from "src/easers/schema/easer.schema";
+import { Prop, Schema, SchemaFactory, raw } from '@nestjs/mongoose';
+import * as mongoose from 'mongoose';
+import { Address } from 'src/address/entities/address.entity';
+import { Client } from 'src/clients/schema/client.schema';
+import { Easer } from 'src/easers/schema/easer.schema';
+import { RoomPrice } from 'src/room-prices/entities/room-price.entity';
 
 export type BookingDocument = mongoose.HydratedDocument<Booking>;
 
 @Schema({ timestamps: true })
-export class Booking{
-
-  @Prop()
+export class Booking {
+  @Prop({ required: true })
   service: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Address'})
-  address: string;
+  @Prop({ required: true })
+  buildingType: string;
 
-  @Prop(raw([{
-    date: {type: String, required: true},
-    isCompleted: { type: Boolean, default: false}
-  }]))
+  @Prop({ required: true })
+  frequency: string;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Address' })
+  address: Address;
+
+  @Prop(
+    raw([
+      {
+        date: { type: String, required: true },
+        isCompleted: { type: Boolean, default: false },
+      },
+    ]),
+  )
   dates: Record<string, any>;
 
   @Prop()
   rooms: number;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Easer'})
+  @Prop()
+  house_setting: RoomPrice[];
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Easer' })
   easer: Easer;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Client'})
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Client' })
   client: Client;
 
   @Prop()
   arrivalTime: string;
+
+  @Prop()
+  costPrice: number;
+
+  @Prop()
+  active: boolean;
+
+  @Prop({ required: true, default: new Date().setMonth(new Date().getMonth() + 1)})
+  expiryDate: Date;
+
+  @Prop({ required: true, default: new Date() })
+  startingDate: Date;
 }
 
 export const BookingSchema = SchemaFactory.createForClass(Booking);

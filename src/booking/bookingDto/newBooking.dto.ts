@@ -5,6 +5,12 @@ export class NewBookingDto {
   service: string;
 
   @IsNotEmpty()
+  frequency: string;
+  
+  @IsNotEmpty()
+  buildingType: string;
+
+  @IsNotEmpty()
   address: string;
 
   @IsNotEmpty()

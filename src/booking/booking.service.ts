@@ -1,14 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Model } from 'mongoose';
 import { Booking } from './schema/booking.schema';
 import { NewBookingDto } from './bookingDto/newBooking.dto';
+import { Client } from 'src/clients/schema/client.schema';
+import { Errand } from 'src/errands/schema/errand.schema';
+import { Laundry } from 'src/laundry/entities/laundry.entity';
 
 @Injectable()
 export class BookingService {
   constructor(
-    @InjectModel(Booking.name) private bookingModel: Model<Booking>, //@InjectModel(Notification.name) private notificationModel: Model<Notification>
+    @InjectModel(Booking.name) private bookingModel: Model<Booking>,
+    @InjectModel(Client.name) private clientModel: Model<Client>,
+    @InjectModel(Errand.name) private errandsModel: Model<Errand>,
+    @InjectModel(Laundry.name) private laundryModel: Model<Laundry>, //@InjectModel(Notification.name) private notificationModel: Model<Notification>
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_6AM)
@@ -28,6 +34,27 @@ export class BookingService {
 
   // create a new booking
   async saveNewBooking(booking: NewBookingDto) {
+    if (booking.buildingType !== 'commercial') {
+      throw new HttpException(
+        'This is not a commercial property, please specify the number of rooms',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (booking.dates.length < 0) {
+      throw new HttpException(
+        'Please you have to select the days you would like us to send an Easer to you',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (booking.frequency === 'one-time' && booking.dates.length > 1) {
+      throw new HttpException(
+        'A one time booking cannot have more than one schedule date',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const new_booking = await this.bookingModel.create(booking);
     return new_booking;
   }

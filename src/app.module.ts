@@ -28,6 +28,11 @@ import { InquiriesModule } from './inquiries/inquiries.module';
 import { EmployeeModule } from './employee/employee.module';
 import { MailService } from './mail/mail.service';
 import { MailModule } from './mail/mail.module';
+import { BlogModule } from './blog/blog.module';
+import { LaundryModule } from './laundry/laundry.module';
+import { CombinedBookingsModule } from './combined-bookings/combined-bookings.module';
+import { RoomPricesModule } from './room-prices/room-prices.module';
+import { FumigationModule } from './fumigation/fumigation.module';
 
 @Module({
   imports: [
@@ -49,6 +54,7 @@ import { MailModule } from './mail/mail.module';
     AccountDetailsModule,
     EatseServicesModule,
     EatsePoliciesModule,
+    FumigationModule,
     JobPostsModule,
     EatseBlogsModule,
     FeedbacksModule,
@@ -56,6 +62,10 @@ import { MailModule } from './mail/mail.module';
     InquiriesModule,
     EmployeeModule,
     MailModule,
+    BlogModule,
+    LaundryModule,
+    CombinedBookingsModule,
+    RoomPricesModule,
   ],
   controllers: [AppController],
   providers: [AppService, MailService],

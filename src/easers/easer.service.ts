@@ -55,7 +55,7 @@ export class EaserService {
       '&phone=' +
       easerDetails.phone;
     const newEaser = await this.easerModel.create(easerDetails);
-    await this.mailService.sendUserRegistrationConfirmation(newEaser)
+    //await this.mailService.sendUserRegistrationConfirmation(newEaser, email_verification_token);
     
     return newEaser;
   }

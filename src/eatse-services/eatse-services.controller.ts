@@ -19,9 +19,9 @@ export class EatseServicesController {
     return this.eatseServicesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.eatseServicesService.findOne(+id);
+  @Get(':service_name')
+  findOne(@Param('service_name') name: string) {
+    return this.eatseServicesService.findOne(name);
   }
 
   @Patch(':id')

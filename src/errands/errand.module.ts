@@ -12,6 +12,6 @@ import { Errand, ErrandSchema } from './schema/errand.schema';
   ],
   controllers: [ErrandController],
   providers: [ErrandService],
-  exports: [],
+  exports: [ErrandService],
 })
 export class ErrandModule {}

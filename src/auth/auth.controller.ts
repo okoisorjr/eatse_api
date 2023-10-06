@@ -1,29 +1,45 @@
-import { Controller, Post, Body, UseGuards, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  Res,
+  Param,
+} from '@nestjs/common';
 import { LoginDto } from './authDto/login.dto';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
-import { serialize } from 'cookie';
-import { LocalAuthGuard } from './local.auth.guard';
+import { AuthGuard } from './auth.guard';
+import { NewClientDto } from 'src/clients/clientDto/newClient.dto';
+import { ResourceCreated } from 'src/shared/resource-created';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
+  @Post('client-registration')
+  async client_signup(@Body() body: NewClientDto) {
+    return this.authService.signup_client(body);
+  }
+
   @Post('client')
   async signInClient(
     @Body() body: LoginDto,
-    @Req() userDetails: Request,
+    //@Req() userDetails: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    console.log(body);
-    console.log(userDetails.body);
-    const { accessToken, user } = await this.authService.validateUser(
+    let user = await this.authService.validateUser(body);
+    /* return ( */
+    response.appendHeader('Authorization', `Bearer ${user.access_token}`),
+      response.send(user);
+    //);
+    /* const { accessToken, user } = await this.authService.validateUser(
       userDetails.body,
-    );
-    response.cookie('value', accessToken, {
+    ); */
+    /* response.cookie('value', accessToken, {
       maxAge: 7 * 24 * 60 * 60 * 1000
-    });
+    }); */
     /* response.appendHeader('Authorization', `Bearer ${accessToken}`);
     response.setHeader(
       'Set-Cookie',
@@ -37,10 +53,41 @@ export class AuthController {
     ); */
     //response.setHeader('Set-Cookie', accessToken);
     //response.status(200).cookie('jwt', accessToken);
-    return user;
   }
 
-  //@UseGuards(LocalAuthGuard)
+  @Post('verify-client-email/:token')
+  async verifyClientEmail(
+    @Param('token') token: string,
+    @Body() body: ResourceCreated,
+  ) {
+    return this.authService.verifyClientEmail(token);
+  }
+
+  @Post('verify-easer-email/:token')
+  async verifyEaserEmail(
+    @Param('token') token: string,
+    @Body() body: ResourceCreated,
+  ) {
+    return this.authService.verifyEaserEmail(token);
+  }
+
+  @Post('register-client')
+  async easer_signup() {}
+
   @Post('easer')
   signInEaser(@Body() body: LoginDto) {}
+
+  @UseGuards(AuthGuard)
+  @Get('resend-email-token')
+  async resendEmailVerificationToken() {
+    return this.authService.resendEmailVerificationToken();
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('signout-client')
+  async logoutClient() {}
+
+  @UseGuards(AuthGuard)
+  @Post('signout-easer')
+  async logoutEaser() {}
 }

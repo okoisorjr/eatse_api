@@ -7,6 +7,7 @@ import { Client } from '../schema/client.schema';
 import { Easer } from 'src/easers/schema/easer.schema';
 import { updateAssignedEaserDto } from '../clientDto/updateAssignedEaser.dto';
 import { AddressDto } from 'src/clients/clientDto/address.dto';
+import { MailService } from 'src/mail/mail.service';
 
 export interface EaserData {
   firstname: string;
@@ -22,7 +23,7 @@ export class ClientsService {
   constructor(
     @InjectModel(Client.name) private clientModel: Model<Client>,
     @InjectModel(Easer.name) private easerModel: Model<Easer>,
-    @InjectConnection() private connection: Connection,
+    private readonly mailService: MailService
   ) {}
 
   async getAllClients(): Promise<Client[]> {

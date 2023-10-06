@@ -11,8 +11,8 @@ import { Client } from 'src/clients/schema/client.schema';
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendUserRegistrationConfirmation(new_user: Client | Easer | Employee) {
-    const url = `https://eatse.ng/verify-account`;
+  async sendUserRegistrationConfirmation(new_user: Client | Easer | Employee, email_verification_token: string) {
+    const url = `http://localhost:4203/auth/verify-account?token=${email_verification_token}`;
 
     try {
       await this.mailerService.sendMail({
@@ -20,7 +20,7 @@ export class MailService {
         subject: `Welcome to Eatse! Confirm your Email`,
         template: './confirmation-mail',
         context: {
-          name: new_user.firstname + new_user.lastname,
+          name: new_user.firstname,
           url,
         },
       });

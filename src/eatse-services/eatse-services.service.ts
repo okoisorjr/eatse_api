@@ -93,12 +93,18 @@ export class EatseServicesService {
   }
 
   async findAll(): Promise<EatseService[]> {
-    const services = await this.eatseServicesModel.find();
+    const services = await this.eatseServicesModel
+      .find()
+      .select('title name description photoURL position')
+      .sort([['position', 1]]);
     return services;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} eatseService`;
+  async findOne(service_name: string) {
+    const service = await this.eatseServicesModel.findOne({
+      name: service_name,
+    });
+    return service;
   }
 
   update(id: number, updateEatseServiceDto: UpdateEatseServiceDto) {

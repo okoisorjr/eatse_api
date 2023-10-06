@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Global } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { ClientModule } from 'src/clients/client.module';
@@ -16,13 +16,25 @@ import { JwtStrategy } from './jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { SessionSerializer } from './session.serializer';
 import { MailService } from 'src/mail/mail.service';
+import { RefreshTokenStrategy } from './refresh-token.strategy';
 
+@Global()
 @Module({
-  providers: [AuthService, ClientsService, EaserService, LocalStrategy, JwtStrategy, BookingService, SessionSerializer, MailService],
+  providers: [
+    AuthService,
+    ClientsService,
+    EaserService,
+    LocalStrategy,
+    JwtStrategy,
+    RefreshTokenStrategy,
+    BookingService,
+    SessionSerializer,
+    MailService,
+  ],
   controllers: [AuthController],
   exports: [AuthService],
   imports: [
-    PassportModule.register({session: true}),
+    PassportModule.register({ session: true }),
     ClientModule,
     BookingModule,
     MongooseModule.forFeature([
@@ -31,8 +43,8 @@ import { MailService } from 'src/mail/mail.service';
     ]),
     JwtModule.register({
       global: true,
-      secret: jwt_secret.secret,
-      signOptions: { expiresIn: '900s' },
+      secret: process.env.ACCESS_TOKEN_SECRET,
+      signOptions: { expiresIn: '15m' },
     }),
   ],
 })
