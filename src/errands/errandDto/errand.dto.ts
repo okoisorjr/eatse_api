@@ -1,6 +1,6 @@
 import { IsArray, IsNotEmpty } from "class-validator";
 
-export class NewErrandDto{
+export class ErrandDto{
   @IsNotEmpty()
   service: string;
 

@@ -2,13 +2,11 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Errand, ErrandSchema } from './schema/errand.schema';
 import { Model } from 'mongoose';
-import { NewErrandDto } from './errandDto/NewErrand.dto';
+import { ErrandDto } from './errandDto/errand.dto';
 
 @Injectable()
 export class ErrandService {
-  constructor(
-    @InjectModel(Errand.name) private errandModel: Model<Errand>,
-  ) {}
+  constructor(@InjectModel(Errand.name) private errandModel: Model<Errand>) {}
 
   async fetchAllErrands(): Promise<Errand[]> {
     const errands = await this.errandModel.find();
@@ -20,7 +18,7 @@ export class ErrandService {
     return errands;
   }
 
-  async saveNewErrand(errand: NewErrandDto): Promise<Errand> {
+  async saveNewErrand(errand: ErrandDto): Promise<Errand> {
     const new_errand = await this.errandModel.create(errand);
 
     if (!new_errand) {
