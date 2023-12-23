@@ -14,7 +14,6 @@ import { ClientsService } from '../service/clients.service';
 import { NewClientDto } from '../clientDto/newClient.dto';
 import { updateAssignedEaserDto } from '../clientDto/updateAssignedEaser.dto';
 import { AddressDto } from 'src/clients/clientDto/address.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/shared/roles.enum';

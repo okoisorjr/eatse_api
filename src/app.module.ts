@@ -33,6 +33,7 @@ import { LaundryModule } from './laundry/laundry.module';
 import { CombinedBookingsModule } from './combined-bookings/combined-bookings.module';
 import { RoomPricesModule } from './room-prices/room-prices.module';
 import { FumigationModule } from './fumigation/fumigation.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { FumigationModule } from './fumigation/fumigation.module';
       envFilePath: '.env',
       isGlobal: true,
     }),
+    DashboardModule,
     MongooseModule.forRoot(process.env.MONGO_URI),
     ScheduleModule.forRoot(),
     AuthModule,

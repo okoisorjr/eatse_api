@@ -14,4 +14,10 @@ export class CombinedBookingsController {
   findOne(@Param('client_id') client_id: string) {
     return this.combinedBookingsService.findOne(client_id);
   }
+
+  @UseGuards(AuthGuard)
+  @Get('active/:client_id')
+  findActiveBookings(@Param('client_id') client_id: string) {
+    return this.combinedBookingsService.findActiveCombinedBookings(client_id);
+  }
 }

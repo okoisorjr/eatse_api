@@ -34,7 +34,7 @@ export class BookingService {
 
   // create a new booking
   async saveNewBooking(booking: NewBookingDto) {
-    if (booking.buildingType !== 'commercial') {
+    if (booking.buildingType !== 'commercial' && booking.rooms < 2) {
       throw new HttpException(
         'This is not a commercial property, please specify the number of rooms',
         HttpStatus.BAD_REQUEST,

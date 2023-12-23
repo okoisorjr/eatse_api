@@ -18,6 +18,7 @@ export class BookingController {
   @UseGuards(AuthGuard)
   @Post('new-booking') // creates a new booking
   saveBooking(@Body() body: NewBookingDto) {
+    console.log(body);
     return this.bookingService.saveNewBooking(body);
   }
 

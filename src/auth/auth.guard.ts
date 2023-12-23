@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   Injectable,
   UnauthorizedException,
+  HttpException, HttpStatus
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -27,6 +28,10 @@ export class AuthGuard implements CanActivate {
         secret: this.config.get('ACCESS_TOKEN_SECRET'),
       });
       request['user'] = payload;
+
+      /* if(new Date(payload.iat) < new Date()){
+        throw new HttpException('Token expired!', HttpStatus.FORBIDDEN);
+      } */
     } catch {
       throw new UnauthorizedException('Access denied!');
     }

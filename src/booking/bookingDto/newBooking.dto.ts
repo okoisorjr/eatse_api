@@ -11,6 +11,9 @@ export class NewBookingDto {
   buildingType: string;
 
   @IsNotEmpty()
+  cost: number;
+
+  @IsNotEmpty()
   address: string;
 
   @IsNotEmpty()
@@ -19,7 +22,7 @@ export class NewBookingDto {
   @IsNotEmpty()
   rooms: number;
 
-  @IsNotEmpty()
+  //@IsNotEmpty()
   easer: string;
 
   @IsNotEmpty()

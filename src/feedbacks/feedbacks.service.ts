@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
 import { UpdateFeedbackDto } from './dto/update-feedback.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -30,6 +30,11 @@ export class FeedbacksService {
     const feedbacks = await this.feedbackModel
       .find()
       .populate({ path: 'client', select: 'firstname lastname' });
+
+    if(!feedbacks){
+      throw new NotFoundException('Ooops!...No Testimonies yet!');
+    }
+    
     let shuffled = this.shuffleFeedbacks(feedbacks);
     for (let i = 0; i < 6; i++) {
       feedbacksToDisplay.push(shuffled[i]);

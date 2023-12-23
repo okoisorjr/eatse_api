@@ -1,30 +1,30 @@
 import { Module } from '@nestjs/common';
-import { NotificationController } from './notification.controller';
-import { NotificationService } from './notification.service';
+import { DashboardService } from './dashboard.service';
+import { DashboardController } from './dashboard.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import {
-  Notification,
-  NotificationSchema,
-} from './schema/notification.schema';
 import { Booking, BookingSchema } from 'src/booking/schema/booking.schema';
-import { BookingService } from 'src/booking/booking.service';
 import { Client, ClientSchema } from 'src/clients/schema/client.schema';
 import { Errand, ErrandSchema } from 'src/errands/schema/errand.schema';
+import {
+  Fumigation,
+  FumigationSchema,
+} from 'src/fumigation/schema/fumigation.schema';
 import { Laundry, LaundrySchema } from 'src/laundry/entities/laundry.entity';
-import { Employee, EmployeeSchema } from 'src/employee/entities/employee.entity';
+import { Feedback, FeedbackSchema } from 'src/feedbacks/entities/feedback.entity';
 
 @Module({
+  controllers: [DashboardController],
   imports: [
     MongooseModule.forFeature([
-      { name: Notification.name, schema: NotificationSchema },
       { name: Booking.name, schema: BookingSchema },
       { name: Client.name, schema: ClientSchema },
       { name: Errand.name, schema: ErrandSchema },
+      { name: Fumigation.name, schema: FumigationSchema },
       { name: Laundry.name, schema: LaundrySchema },
-      { name: Employee.name, schema: EmployeeSchema }
+      { name: Feedback.name, schema: FeedbackSchema }
     ]),
   ],
-  controllers: [NotificationController],
-  providers: [NotificationService, BookingService],
+  exports: [DashboardService],
+  providers: [DashboardService],
 })
-export class NotificationModule {}
+export class DashboardModule {}

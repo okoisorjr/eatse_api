@@ -18,7 +18,7 @@ async function bootstrap() {
   );
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors({
-    origin: ['http://localhost:4203'],
+    origin: ['http://localhost:4203', 'http://192.168.0.180:4800'],
   });
   app.use(cookieParser());
   app.use(passport.initialize());

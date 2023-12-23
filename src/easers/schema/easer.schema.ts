@@ -55,6 +55,9 @@ export class Easer {
   @Prop()
   refreshToken: string;
 
+  @Prop({ default: false })
+  verified: boolean
+
   /* @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Client' }])
   assignedClients: Client[]; */
   

@@ -1,16 +1,24 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Address } from './entities/address.entity';
 import { Model } from 'mongoose';
 import { Easer } from 'src/easers/schema/easer.schema';
+import { Client } from 'src/clients/schema/client.schema';
+import { ResourceCreated } from 'src/shared/resource-created';
 
 @Injectable()
 export class AddressService {
   constructor(
     @InjectModel(Address.name) private readonly addressModel: Model<Address>,
     @InjectModel(Easer.name) private readonly easerModel: Model<Easer>,
+    @InjectModel(Client.name) private readonly clientModel: Model<Client>,
   ) {}
 
   async create(createAddressDto: CreateAddressDto) {
@@ -68,11 +76,31 @@ export class AddressService {
     return addresses;
   }
 
-  update(id: number, updateAddressDto: UpdateAddressDto) {
-    return `This action updates a #${id} address`;
+  async update(address_id: string, updateAddressDto: UpdateAddressDto) {
+    const client = await this.clientModel.findById({
+      _id: updateAddressDto.user,
+    });
+
+    if (!client) {
+      const easer = await this.easerModel.findById({
+        _id: updateAddressDto.user,
+      });
+
+      if (!easer) {
+        throw new NotFoundException('User not found!');
+      }
+    }
+
+    let address = await this.addressModel.findOneAndUpdate(
+      { _id: address_id },
+      updateAddressDto,
+      { upsert: true, new: true },
+    );
+    return address;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} address`;
+  async remove(address_id: string) {
+    const content = await this.addressModel.findOneAndDelete({ _id: address_id });
+    return new ResourceCreated;
   }
 }

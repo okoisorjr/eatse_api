@@ -13,6 +13,9 @@ import { Request, Response } from 'express';
 import { AuthGuard } from './auth.guard';
 import { NewClientDto } from 'src/clients/clientDto/newClient.dto';
 import { ResourceCreated } from 'src/shared/resource-created';
+import { NewEaserDto } from 'src/easers/easerDto/newEaser.dto';
+import { ChangePasswordDto } from './authDto/change-password.dto';
+import { RefreshTokenGuard } from './refresh-token.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -71,11 +74,17 @@ export class AuthController {
     return this.authService.verifyEaserEmail(token);
   }
 
-  @Post('register-client')
-  async easer_signup() {}
+  @Post('easer-registration')
+  async easer_signup(@Body() body: NewEaserDto) {
+    this.authService.signup_easer(body);
+  }
 
   @Post('easer')
-  signInEaser(@Body() body: LoginDto) {}
+  async signInEaser(@Body() body: LoginDto,  @Res({ passthrough: true }) response: Response) {
+    let easer = await this.authService.validateUser(body);
+    response.appendHeader('Authorization', `Bearer ${easer.access_token}`),
+      response.send(easer);
+  }
 
   @UseGuards(AuthGuard)
   @Get('resend-email-token')
@@ -85,9 +94,25 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @Post('signout-client')
-  async logoutClient() {}
+  async logoutClient() {
+    return this.authService.logoutUser();
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('change-password')
+  async updateClientPassword(@Body() body: ChangePasswordDto) {
+    return this.authService.updateClientPassword(body);
+  }
+
+  @UseGuards(RefreshTokenGuard)
+  @Post('refresh-token/:token')
+  async refreshToken(@Param('token') token: string) {
+    return this.authService.refreshToken(token);
+  }
 
   @UseGuards(AuthGuard)
   @Post('signout-easer')
-  async logoutEaser() {}
+  async logoutEaser() {
+    return this.authService.logoutUser();
+  }
 }

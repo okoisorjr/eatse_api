@@ -21,6 +21,9 @@ export class Booking {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Address' })
   address: Address;
 
+  @Prop({ required: true })
+  days: number[];
+
   @Prop(
     raw([
       {
@@ -38,7 +41,7 @@ export class Booking {
   house_setting: RoomPrice[];
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Easer' })
-  easer: Easer;
+  easer: Easer | null;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Client' })
   client: Client;
@@ -47,10 +50,13 @@ export class Booking {
   arrivalTime: string;
 
   @Prop()
-  costPrice: number;
+  cost: number;
 
   @Prop()
   active: boolean;
+
+  @Prop()
+  message: string;
 
   @Prop({ required: true, default: new Date().setMonth(new Date().getMonth() + 1)})
   expiryDate: Date;

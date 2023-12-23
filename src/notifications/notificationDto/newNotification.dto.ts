@@ -1,4 +1,5 @@
-import { IsNotEmpty } from "class-validator";
+import { IsEnum, IsMongoId, IsNotEmpty } from "class-validator";
+import { Role } from '../../shared/roles.enum';
 
 export class NewNotificationDto{
   @IsNotEmpty()
@@ -7,5 +8,10 @@ export class NewNotificationDto{
   @IsNotEmpty()
   notice: string;
 
-  
+  @IsNotEmpty()
+  @IsMongoId()
+  postedBy: string;
+
+  @IsNotEmpty()
+  target: string;
 }

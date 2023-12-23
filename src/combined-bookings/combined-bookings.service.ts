@@ -63,4 +63,51 @@ export class CombinedBookingsService {
     ];
     return current_user_bookings;
   }
+
+  async findActiveCombinedBookings(client_id: string) {
+    const client = await this.clientModel.findById(client_id);
+
+    if (!client) {
+      throw new HttpException(`User account could not be found!`, HttpStatus.NOT_FOUND);
+    }
+
+    // find all clients cleaning services booked
+    const regular_bookings = await this.bookingModel
+      .find({ client: client })
+      .populate({
+        path: 'address',
+        select: '_id country state city street zip_code',
+      });
+
+    // find all clients errand services booked
+    const errand_bookings = await this.errandsModel
+      .find({ client: client })
+      .populate({
+        path: 'pickupAddress',
+        select: '_id country state city street zip_code',
+      })
+      .populate({
+        path: 'deliveryAddress',
+        select: '_id country state city street zip_code',
+      });
+
+    // find all clients laundry services booked and still active
+    const laundry_bookings = await this.laundryModel
+      .find({ client: client, "expiryDate": {$gte: new Date().setHours(0, 0, 0, 0)}})
+      .populate({
+        path: 'pickupAddress',
+        select: '_id country state city street zip_code',
+      })
+      .populate({
+        path: 'deliveryAddress',
+        select: '_id country state city street zip_code',
+      });
+
+    const current_active_bookings = [
+      ...regular_bookings,
+      ...errand_bookings,
+      ...laundry_bookings,
+    ];
+    return current_active_bookings;
+  }
 }
