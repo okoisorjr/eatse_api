@@ -1,8 +1,8 @@
 export enum Service {
-  HOUSEKEEPING = 'HOUSEKEEPING',
-  DISPATCH_DELIVERY = 'DISPATCH_DELIVERY',
-  FUMIGATION = 'FUMIGATION',
-  DEEP_CLEANING = 'DEEP_CLEANING',
-  ERRANDS = 'ERRANDS',
-  LAUNDRY = 'LAUNDRY'
+  HOUSEKEEPING = 'house-keeping',
+  DISPATCH_DELIVERY = 'dispatch-delivery',
+  FUMIGATION = 'fumigation',
+  DEEP_CLEANING = 'deep-cleaning',
+  ERRANDS = 'errands',
+  LAUNDRY = 'laundry',
 }
