@@ -113,6 +113,10 @@ export class BookingService {
           path: 'easer',
           select: 'id firstname lastname phone email referralCode rating',
         })
+        .populate({
+          path: 'address',
+          select: 'id country state city zip_code street',
+        })
         .limit(query ? query.limit : 0);
       return bookings;
     } catch (error) {
@@ -142,10 +146,7 @@ export class BookingService {
     return bookings;
   }
 
-  async assignEaserToBooking(
-    booking_id: string,
-    easer_id: string,
-  ) {
+  async assignEaserToBooking(booking_id: string, easer_id: string) {
     let assigned_booking;
 
     try {
