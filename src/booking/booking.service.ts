@@ -35,7 +35,7 @@ export class BookingService {
 
   // create a new booking
   async saveNewBooking(booking: NewBookingDto) {
-    let dates = [];
+    const dates = [];
 
     if (booking.buildingType !== 'commercial' && booking.rooms < 2) {
       throw new HttpException(
@@ -59,7 +59,7 @@ export class BookingService {
     }
 
     booking.dates.forEach((date) => {
-      let data = {
+      const data = {
         date: date,
         isCompleted: false,
       };
