@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsEmail, IsEnum } from "class-validator";
-import { Role } from "src/shared/roles.enum";
+import { IsNotEmpty, IsEmail, IsEnum } from 'class-validator';
+import { Role } from 'src/shared/roles.enum';
 
-export class NewClientDto{
+export class NewClientDto {
   @IsNotEmpty()
   firstname: string;
 

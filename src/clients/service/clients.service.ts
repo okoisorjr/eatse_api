@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { NewClientDto } from '../clientDto/newClient.dto';
 import { Model, Connection } from 'mongoose';
@@ -23,7 +23,7 @@ export class ClientsService {
   constructor(
     @InjectModel(Client.name) private clientModel: Model<Client>,
     @InjectModel(Easer.name) private easerModel: Model<Easer>,
-    private readonly mailService: MailService
+    private readonly mailService: MailService,
   ) {}
 
   async getAllClients(): Promise<Client[]> {
@@ -106,6 +106,24 @@ export class ClientsService {
     }
 
     client.set('address', address).save();
+    return client;
+  }
+
+  // Get easer assigned to a client
+  async fetchAssignedEaser(client_id: string) {
+    const client = await this.clientModel
+      .find({ _id: client_id })
+      .select('easer -_id')
+      .populate({
+        path: 'easer',
+        select: '_id firstname lastname phone',
+      })
+      .exec();
+
+    if (!client) {
+      throw new NotFoundException();
+    }
+
     return client;
   }
 }

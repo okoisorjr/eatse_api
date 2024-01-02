@@ -34,6 +34,7 @@ import { CombinedBookingsModule } from './combined-bookings/combined-bookings.mo
 import { RoomPricesModule } from './room-prices/room-prices.module';
 import { FumigationModule } from './fumigation/fumigation.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { LaundryItemsModule } from './laundry-items/laundry-items.module';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     LaundryModule,
     CombinedBookingsModule,
     RoomPricesModule,
+    LaundryItemsModule,
   ],
   controllers: [AppController],
   providers: [AppService, MailService],
