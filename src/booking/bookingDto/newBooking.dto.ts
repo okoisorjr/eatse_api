@@ -18,7 +18,7 @@ export class NewBookingDto {
   address: string;
 
   @IsNotEmpty()
-  dates: string[];
+  dates: any[];
 
   @IsNotEmpty()
   rooms: number;

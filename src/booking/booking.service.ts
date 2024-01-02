@@ -35,6 +35,8 @@ export class BookingService {
 
   // create a new booking
   async saveNewBooking(booking: NewBookingDto) {
+    let dates = [];
+
     if (booking.buildingType !== 'commercial' && booking.rooms < 2) {
       throw new HttpException(
         'This is not a commercial property, please specify the number of rooms',
@@ -55,6 +57,16 @@ export class BookingService {
         HttpStatus.BAD_REQUEST,
       );
     }
+
+    booking.dates.forEach((date) => {
+      let data = {
+        date: date,
+        isCompleted: false,
+      };
+      dates.push(data);
+    });
+
+    booking.dates = dates;
 
     const new_booking = await this.bookingModel.create(booking);
     return new_booking;
