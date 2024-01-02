@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import * as mongoose from 'mongoose';
 import { Schema, SchemaFactory, Prop, raw } from '@nestjs/mongoose';
 import { Role } from 'src/shared/roles.enum';

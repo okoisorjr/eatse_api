@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -35,7 +36,7 @@ export class BookingService {
 
   // create a new booking
   async saveNewBooking(booking: NewBookingDto) {
-    let dates = [];
+    const dates = [];
 
     if (booking.buildingType !== 'commercial' && booking.rooms < 2 && booking.service !== Service.FUMIGATION) {
       throw new HttpException(
@@ -59,7 +60,7 @@ export class BookingService {
     }
 
     booking.dates.forEach((date) => {
-      let data = {
+      const data = {
         date: date,
         isCompleted: false,
       };
@@ -99,9 +100,26 @@ export class BookingService {
   }
 
   // retrieve all bookings in the database
-  async getAllBookings(): Promise<Booking[]> {
-    const bookings = await this.bookingModel.find();
-    return bookings;
+  async getAllBookings(query?: any): Promise<Booking[]> {
+    let bookings;
+
+    try {
+      bookings = await this.bookingModel
+        .find()
+        .populate({
+          path: 'client',
+          select: 'id firstname lastname phone email referralCode',
+        })
+        .populate({
+          path: 'easer',
+          select: 'id firstname lastname phone email referralCode rating',
+        })
+        .limit(query ? query.limit : 0);
+      return bookings;
+    } catch (error) {
+      console.log(error);
+      return bookings;
+    }
   }
 
   // retrieve all bookings scheduled for the present day which has not been cleaned
@@ -123,6 +141,27 @@ export class BookingService {
       .exec();
 
     return bookings;
+  }
+
+  async assignEaserToBooking(
+    booking_id: string,
+    easer_id: string,
+  ) {
+    let assigned_booking;
+
+    try {
+      assigned_booking = await this.bookingModel.findByIdAndUpdate(
+        booking_id,
+        { easer: easer_id },
+        {
+          upsert: true,
+          new: true,
+        },
+      );
+      return assigned_booking;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async getAllBookingsCleanedForToday() {
