@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Controller,
   Get,
@@ -22,8 +23,8 @@ import { Role } from 'src/shared/roles.enum';
 export class ClientsController {
   constructor(private clientService: ClientsService) {}
 
-  @UseGuards(AuthGuard)
-  @Roles(Role.ADMIN, Role.CLIENT)
+  //@UseGuards(AuthGuard)
+  //@Roles(Role.ADMIN, Role.CLIENT)
   @Get()
   getClients() {
     return this.clientService.getAllClients();

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Controller,
   Get,
@@ -6,6 +7,7 @@ import {
   Param,
   Put,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { NewBookingDto } from './bookingDto/newBooking.dto';
 import { BookingService } from './booking.service';
@@ -34,10 +36,20 @@ export class BookingController {
     );
   }
 
-  @UseGuards(AuthGuard)
+  @Put(':booking_id/easer/:easer_id/assign')
+  assignBookingEaser(@Param() booking_id: string, @Param() easer_id: string) {
+    return this.bookingService.assignEaserToBooking(booking_id, easer_id);
+  }
+
+  //@UseGuards(AuthGuard)
   @Get() // retrieves all the bookings from the database
-  retrieveBookings() {
-    return this.bookingService.getAllBookings();
+  retrieveBookings(@Query() query: number) {
+    if (query) {
+      console.log('limit:', query);
+      return this.bookingService.getAllBookings(query);
+    } else {
+      return this.bookingService.getAllBookings();
+    }
   }
 
   @UseGuards(AuthGuard)
