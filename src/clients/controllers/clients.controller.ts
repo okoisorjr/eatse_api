@@ -81,6 +81,11 @@ export class ClientsController {
     return this.clientService.assignEaserToClient(clientId, body);
   }
 
+  @Get(':client_id/assigned_easer')
+  fetchClientEaser(@Param('client_id') client_id: string) {
+    return this.clientService.fetchAssignedEaser(client_id);
+  }
+
   @UseGuards(AuthGuard)
   @Delete()
   deleteClientAccount(id: string) {

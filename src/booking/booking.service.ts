@@ -7,6 +7,7 @@ import { NewBookingDto } from './bookingDto/newBooking.dto';
 import { Client } from 'src/clients/schema/client.schema';
 import { Errand } from 'src/errands/schema/errand.schema';
 import { Laundry } from 'src/laundry/entities/laundry.entity';
+import { Service } from 'src/shared/services.enum';
 
 @Injectable()
 export class BookingService {
@@ -36,7 +37,7 @@ export class BookingService {
   async saveNewBooking(booking: NewBookingDto) {
     let dates = [];
 
-    if (booking.buildingType !== 'commercial' && booking.rooms < 2) {
+    if (booking.buildingType !== 'commercial' && booking.rooms < 2 && booking.service !== Service.FUMIGATION) {
       throw new HttpException(
         'This is not a commercial property, please specify the number of rooms',
         HttpStatus.BAD_REQUEST,

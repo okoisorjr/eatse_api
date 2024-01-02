@@ -1,11 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { CreateLaundryDto } from './dto/create-laundry.dto';
 import { UpdateLaundryDto } from './dto/update-laundry.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Laundry } from './entities/laundry.entity';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class LaundryService {
-  create(createLaundryDto: CreateLaundryDto) {
-    return 'This action adds a new laundry';
+  constructor(@InjectModel(Laundry.name) private laundryModel: Model<Laundry>){}
+
+  async create(createLaundryDto: CreateLaundryDto) {
+    let dates = [];
+
+    createLaundryDto.dates.forEach((date) => {
+      let data = {
+        date: date,
+        isCompleted: false,
+      };
+      dates.push(data);
+    });
+
+    createLaundryDto.dates = dates;
+
+    const new_laundry_booking = await this.laundryModel.create(createLaundryDto)
+    return new_laundry_booking;
   }
 
   findAll() {

@@ -30,4 +30,10 @@ export class NewBookingDto {
 
   @IsNotEmpty()
   arrivalTime: string;
+
+  @IsNotEmpty()
+  startingDate: string;
+
+  @IsNotEmpty()
+  expiryDate: string;
 }
