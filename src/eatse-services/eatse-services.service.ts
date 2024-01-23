@@ -95,7 +95,7 @@ export class EatseServicesService {
   async findAll(): Promise<EatseService[]> {
     const services = await this.eatseServicesModel
       .find()
-      .select('title name description photoURL position')
+      .select('title name category description photoURL position')
       .sort([['position', 1]]);
     return services;
   }

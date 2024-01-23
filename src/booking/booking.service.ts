@@ -38,7 +38,11 @@ export class BookingService {
   async saveNewBooking(booking: NewBookingDto) {
     const dates = [];
 
-    if (booking.buildingType !== 'commercial' && booking.rooms < 2 && booking.service !== Service.FUMIGATION) {
+    if (
+      booking.buildingType !== 'commercial' &&
+      booking.rooms < 2 &&
+      booking.service !== Service.FUMIGATION
+    ) {
       throw new HttpException(
         'This is not a commercial property, please specify the number of rooms',
         HttpStatus.BAD_REQUEST,
@@ -111,6 +115,10 @@ export class BookingService {
           select: 'id firstname lastname phone email referralCode',
         })
         .populate({
+          path: 'address',
+          select: 'id country state city street zip_code',
+        })
+        .populate({
           path: 'easer',
           select: 'id firstname lastname phone email referralCode rating',
         })
@@ -143,22 +151,19 @@ export class BookingService {
     return bookings;
   }
 
-  async assignEaserToBooking(
-    booking_id: string,
-    easer_id: string,
-  ) {
-    let assigned_booking;
+  async assignEaserToBooking(booking_id: string, easer_id: string) {
+    let booking;
 
     try {
-      assigned_booking = await this.bookingModel.findByIdAndUpdate(
-        booking_id,
+      booking = await this.bookingModel.findOneAndUpdate(
+        { _id: booking_id },
         { easer: easer_id },
         {
           upsert: true,
           new: true,
         },
       );
-      return assigned_booking;
+      return booking;
     } catch (error) {
       console.log(error);
     }

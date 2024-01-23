@@ -17,6 +17,10 @@ import { PassportModule } from '@nestjs/passport';
 import { SessionSerializer } from './session.serializer';
 import { MailService } from 'src/mail/mail.service';
 import { RefreshTokenStrategy } from './refresh-token.strategy';
+import {
+  PasswordResetToken,
+  PasswordResetTokenSchema,
+} from './PasswordResetToken.schema';
 
 @Global()
 @Module({
@@ -40,6 +44,7 @@ import { RefreshTokenStrategy } from './refresh-token.strategy';
     MongooseModule.forFeature([
       { name: Easer.name, schema: EaserSchema },
       { name: Booking.name, schema: BookingSchema },
+      { name: PasswordResetToken.name, schema: PasswordResetTokenSchema },
     ]),
     JwtModule.register({
       global: true,

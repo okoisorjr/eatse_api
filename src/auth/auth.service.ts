@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Client } from 'src/clients/schema/client.schema';
 import { LoginDto } from './authDto/login.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -15,12 +15,15 @@ import { MailService } from 'src/mail/mail.service';
 import { ConfigService } from '@nestjs/config';
 import { ChangePasswordDto } from './authDto/change-password.dto';
 import { ResourceCreated } from 'src/shared/resource-created';
+import { PasswordResetToken } from './PasswordResetToken.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(Client.name) private clientModel: Model<Client>,
     @InjectModel(Easer.name) private easerModel: Model<Easer>,
+    @InjectModel(PasswordResetToken.name)
+    private resetTokenModel: Model<PasswordResetToken>,
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
@@ -193,7 +196,10 @@ export class AuthService {
     const [access_token, refresh_token] = await Promise.all([
       this.jwtService.signAsync(
         { sub: id, email },
-        { secret: this.configService.get('ACCESS_TOKEN_SECRET'), expiresIn: 900 },
+        {
+          secret: this.configService.get('ACCESS_TOKEN_SECRET'),
+          expiresIn: 900,
+        },
       ),
       this.jwtService.signAsync(
         { sub: id, email },
@@ -216,6 +222,18 @@ export class AuthService {
       },
     );
     return email_token;
+  }
+
+  async generatePasswordResetToken(user_id, email) {
+    const password_reset_token = await this.jwtService.signAsync(
+      { sub: user_id, email },
+      {
+        expiresIn: '60s',
+        secret: this.configService.get('PASSWORD_RESET_TOKEN_SECRET'),
+      },
+    );
+
+    return password_reset_token;
   }
 
   async verifyClientEmail(token: string) {
@@ -258,6 +276,105 @@ export class AuthService {
       } catch {
         throw new UnauthorizedException('Token Expired!');
       }
+  }
+
+  async sendPasswordResetLink(body: any) {
+    let user;
+    let password_reset_token;
+    let reset_token;
+
+    // checking DB to find user
+    try {
+      // check user provided email if it exist in clients or easers collection
+      user = await this.clientModel.findOne({ email: body.email });
+      if (user) {
+      } else {
+        user = await this.easerModel.findOne({ email: body.email });
+      }
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'working on this internal error with our servers, please try again later!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+      return error; //return error
+    }
+
+    // Function generates password reset token, saves generated token to DB and mails user reset token
+    if (user) {
+      // check if user already had a reset password token
+      reset_token = await this.resetTokenModel.findOne({ user_id: user.id });
+
+      // generate a new password reset token for user
+      password_reset_token = await this.generatePasswordResetToken(
+        user.id,
+        user.email,
+      );
+
+      if (reset_token) {
+        this.resetTokenModel.findByIdAndUpdate(
+          reset_token.id,
+          { token: password_reset_token },
+          { upsert: true, new: true },
+        );
+      } else {
+        // save new token to DB with associated user if user does not have an existing reset token
+        const new_reset_token = new this.resetTokenModel();
+        new_reset_token.user = user._id;
+        new_reset_token.token = password_reset_token;
+
+        new_reset_token.save();
+      }
+
+      // send mail to user email with password reset token
+      await this.mailService.sendUserPasswordResetLink(
+        user,
+        password_reset_token,
+      );
+    }
+
+    // response message sent to user on password reset token request, regardless whether or not the email exists
+    return {
+      msg: 'A password reset link has been sent to your email!',
+      //token: password_reset_token,
+    };
+  }
+
+  async passwordReset(body: any) {
+    const reset_token = await this.resetTokenModel.findOne({ user: body.id });
+
+    if (!reset_token) {
+      throw new HttpException(
+        'password reset token either expired or invalid',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    try {
+      if (body.token === reset_token.token) {
+        await this.jwtService.verify(body.token, {
+          secret: this.configService.get('PASSWORD_RESET_TOKEN_SECRET'),
+        });
+
+        const hashed_password = await bcrypt.hash(body.newPassword, 10);
+        const updated_password = await this.clientModel.findByIdAndUpdate(
+          body.id,
+          { password: hashed_password },
+          { upsert: true, new: true },
+        );
+
+        return {
+          status: 200,
+          msg: 'congratulations!..your password has been updated successfully.',
+        };
+      }
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'password reset token expired!',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
   }
 
   async updateClientPassword(changePasswordDto: ChangePasswordDto) {
@@ -329,20 +446,26 @@ export class AuthService {
   async refreshToken(token: string) {
     const decoded = this.jwtService.decode(token);
 
-    if(!decoded){
-      throw new HttpException('refresh token is invalid!', HttpStatus.UNAUTHORIZED);
+    if (!decoded) {
+      throw new HttpException(
+        'refresh token is invalid!',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
-    
-    const client = await this.clientModel.findOne({ _id: decoded.sub});
 
-    if(!client){
+    const client = await this.clientModel.findOne({ _id: decoded.sub });
+
+    if (!client) {
       throw new HttpException('User account not found!', HttpStatus.NOT_FOUND);
     }
 
-    if(token !== client.refreshToken){
-      throw new HttpException('Invalid refresh token!', HttpStatus.UNAUTHORIZED);
+    if (token !== client.refreshToken) {
+      throw new HttpException(
+        'Invalid refresh token!',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
-    
+
     const tokens = this.generateTokens(client.id, client.email);
     return tokens;
   }

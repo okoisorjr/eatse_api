@@ -5,6 +5,9 @@ export class CreateEatseServiceDto {
   title: string;
 
   @IsNotEmpty()
+  category: string;
+
+  @IsNotEmpty()
   description: string;
 
   @IsNotEmpty()

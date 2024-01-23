@@ -10,11 +10,16 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: {
       credentials: true,
-      origin: [
+      origin: '*',
+      /* origin: [
+        '*',
         'http://localhost:4203',
         'http://localhost:4200',
+        'http://localhost:9200',
+        'http://192.168.0.180:9200',
+        'http://192.168.0.181:9200',
         'http://192.168.0.185:4200',
-      ],
+      ], */
     },
   });
   app.use(
@@ -26,12 +31,16 @@ async function bootstrap() {
   );
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors({
-    origin: [
+    origin: '*',
+    /* origin: [
+      '*',
       'http://localhost:4203',
       'http://localhost:4200',
+      'http://localhost:9200',
       'http://192.168.0.180:4800',
+      'http://192.168.0.181:9200',
       'http://192.168.0.185:4200',
-    ],
+    ], */
   });
   app.use(cookieParser());
   app.use(passport.initialize());
