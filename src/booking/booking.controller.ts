@@ -12,6 +12,7 @@ import {
 import { NewBookingDto } from './bookingDto/newBooking.dto';
 import { BookingService } from './booking.service';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { UpdateBookingEaserDto } from './bookingDto/UpdateBookingEaser.dto';
 
 @Controller('booking')
 export class BookingController {
@@ -24,21 +25,9 @@ export class BookingController {
     return this.bookingService.saveNewBooking(body);
   }
 
-  @UseGuards(AuthGuard)
-  @Put(':bookingId/date/:dateId/update_status') // update the isCompleted status of todays cleaning if any
-  updateBookingDateStatus(
-    @Param('bookingId') bookingId: string,
-    @Param('dateId') dateId: string,
-  ) {
-    return this.bookingService.updateBookingDateCompletedStatus(
-      bookingId,
-      dateId,
-    );
-  }
-
-  @Put(':booking_id/easer/:easer_id/assign')
-  assignBookingEaser(@Param() booking_id: string, @Param() easer_id: string) {
-    return this.bookingService.assignEaserToBooking(booking_id, easer_id);
+  @Put('assign_easer')
+  assignBookingEaser(@Body() data: UpdateBookingEaserDto) {
+    return this.bookingService.assignEaserToBooking(data);
   }
 
   //@UseGuards(AuthGuard)
@@ -62,6 +51,18 @@ export class BookingController {
   @Get('today_cleaned') // retrieves all bookings that has been completed for the day
   retrieveAllBookingsCleanedForToday() {
     return this.bookingService.getAllBookingsCleanedForToday();
+  }
+
+  @UseGuards(AuthGuard)
+  @Put(':bookingId/date/:dateId/update_status') // update the isCompleted status of todays cleaning if any
+  updateBookingDateStatus(
+    @Param('bookingId') bookingId: string,
+    @Param('dateId') dateId: string,
+  ) {
+    return this.bookingService.updateBookingDateCompletedStatus(
+      bookingId,
+      dateId,
+    );
   }
 
   @UseGuards(AuthGuard)

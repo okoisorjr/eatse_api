@@ -9,6 +9,7 @@ import { Client } from 'src/clients/schema/client.schema';
 import { Errand } from 'src/errands/schema/errand.schema';
 import { Laundry } from 'src/laundry/entities/laundry.entity';
 import { Service } from 'src/shared/services.enum';
+import { UpdateBookingEaserDto } from './bookingDto/UpdateBookingEaser.dto';
 
 @Injectable()
 export class BookingService {
@@ -101,10 +102,8 @@ export class BookingService {
 
   // retrieve all bookings in the database
   async getAllBookings(query?: any): Promise<Booking[]> {
-    let bookings;
-
     try {
-      bookings = await this.bookingModel
+      const bookings = await this.bookingModel
         .find()
         .populate({
           path: 'client',
@@ -122,7 +121,7 @@ export class BookingService {
       return bookings;
     } catch (error) {
       console.log(error);
-      return bookings;
+      return error;
     }
   }
 
@@ -147,18 +146,20 @@ export class BookingService {
     return bookings;
   }
 
-  async assignEaserToBooking(booking_id: string, easer_id: string) {
+  async assignEaserToBooking(data: UpdateBookingEaserDto) {
     let assigned_booking;
-
+    const booking = await this.bookingModel.findById(data.booking_id);
+    console.log('found booking:', booking)
     try {
       assigned_booking = await this.bookingModel.findByIdAndUpdate(
-        booking_id,
-        { easer: easer_id },
+        data.booking_id,
+        { easer: data.easer_id },
         {
           upsert: true,
           new: true,
         },
       );
+      console.log(assigned_booking);
       return assigned_booking;
     } catch (error) {
       console.log(error);

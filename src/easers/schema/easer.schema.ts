@@ -3,6 +3,7 @@ import * as mongoose from 'mongoose';
 import { Schema, SchemaFactory, Prop, raw } from '@nestjs/mongoose';
 import { Role } from 'src/shared/roles.enum';
 import { Service } from 'src/shared/services.enum';
+import { Address } from 'src/address/entities/address.entity';
 
 export type EaserDocument = mongoose.HydratedDocument<Easer>;
 
@@ -18,6 +19,9 @@ export class Easer {
   email: string;
 
   @Prop({ required: true })
+  easerTag: string;
+
+  @Prop({ required: true })
   phone: string;
 
   @Prop({ required: true })
@@ -31,6 +35,12 @@ export class Easer {
 
   @Prop({ required: true, default: Role.EASER })
   role: Role;
+
+  @Prop({ default: 0 })
+  clientsCount: number;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Address'})
+  address: Address;
 
   /* @Prop(
     raw({

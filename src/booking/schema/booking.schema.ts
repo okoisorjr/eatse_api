@@ -42,7 +42,7 @@ export class Booking {
   house_setting: RoomPrice[];
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Easer' })
-  easer: Easer | null;
+  easer: Easer;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Client' })
   client: Client;
@@ -59,7 +59,10 @@ export class Booking {
   @Prop()
   message: string;
 
-  @Prop({ required: true, default: new Date().setMonth(new Date().getMonth() + 1)})
+  @Prop({
+    required: true,
+    default: new Date().setMonth(new Date().getMonth() + 1),
+  })
   expiryDate: Date;
 
   @Prop({ required: true, default: new Date() })

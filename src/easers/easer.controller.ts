@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Body, Param, Put, Query } from '@nestjs/common';
 import { EaserService } from './easer.service';
 import { NewEaserDto } from './easerDto/newEaser.dto';
@@ -12,18 +13,18 @@ export class EaserController {
   ) {}
 
   @Get()
-  getAllEasers() {
-    return this.easerService.getAllEasers();
+  async getAllEasers() {
+    return await this.easerService.getAllEasers();
   }
 
   @Get('clients/:id/list')
-  getEaserClients(@Param('id') easer_id: string) {
-    return this.easerService.retrieveClientsAssignedToEaser(easer_id);
+  async getEaserClients(@Param('id') easer_id: string) {
+    return await this.easerService.retrieveClientsAssignedToEaser(easer_id);
   }
 
   @Get(':id/bookings')
-  getEaserBookings(@Param('id') id: string) {
-    return this.bookingService.getAllEaserBookings(id);
+  async getEaserBookings(@Param('id') id: string) {
+    return await this.bookingService.getAllEaserBookings(id);
   }
 
   @Get(':easerId/bookings/:bookingId/booking')

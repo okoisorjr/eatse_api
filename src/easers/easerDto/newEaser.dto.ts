@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsEmail, IsMobilePhone, IsEnum } from 'class-validator';
+/* eslint-disable prettier/prettier */
+import { IsNotEmpty, IsEmail, IsMobilePhone, IsEnum, IsEmpty } from 'class-validator';
 import { Service } from 'src/shared/services.enum';
 
 export class NewEaserDto {
@@ -13,6 +14,9 @@ export class NewEaserDto {
 
   @IsMobilePhone()
   phone: string;
+
+  @IsEmpty()
+  easerTag: string;
 
   @IsNotEmpty()
   accumulatedEarning: number;

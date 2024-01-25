@@ -5,4 +5,8 @@ export class UpdateBookingEaserDto{
     @IsNotEmpty()
     @IsMongoId()
     easer_id: string;
+
+    @IsNotEmpty()
+    @IsMongoId()
+    booking_id: string;
 }

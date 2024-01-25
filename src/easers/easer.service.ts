@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { Easer } from './schema/easer.schema';
@@ -7,28 +13,51 @@ import { BookingService } from 'src/booking/booking.service';
 import { AddressDto } from 'src/clients/clientDto/address.dto';
 import { Client } from 'src/clients/schema/client.schema';
 import { MailService } from 'src/mail/mail.service';
+import { Booking } from 'src/booking/schema/booking.schema';
 
 @Injectable()
 export class EaserService {
   constructor(
     @InjectModel(Easer.name) private easerModel: Model<Easer>,
     @InjectModel(Client.name) private clientModel: Model<Client>,
+    @InjectModel(Booking.name) private bookingModel: Model<Booking>,
     private readonly bookingService: BookingService,
-    private readonly mailService: MailService
+    private readonly mailService: MailService,
   ) {}
 
-  /* generateEaserId() {
-    let id = [];
-    for (let i = 0; i < 8; i++) {
-      let val = Math.floor(Math.random() * (10 - 1)) + 1;
+  generateEaserId() {
+    const id = [];
+    for (let i = 0; i < 5; i++) {
+      const val = Math.floor(Math.random() * (10 - 1)) + 1;
       id.push(val);
     }
     console.log(id.join(''));
     return id.join('');
-  } */
+  }
 
-  async getAllEasers(): Promise<Easer[]> {
-    return await this.easerModel.find().exec();
+  async getAllEasers() {
+    const easers = await this.easerModel.find().limit(20).populate({
+      path: 'address',
+      select: 'city state',
+    });
+
+    if (easers.length < 1) {
+      throw new HttpException(
+        'There are currently no easers available.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    easers.map(async (easer) => {
+      easer.clientsCount = await this.bookingModel
+        .find({
+          easer: easer._id,
+          $and: [{ expiryDate: { $lte: new Date().toDateString() } }],
+        })
+        .count();
+    });
+
+    return await easers;
   }
 
   async getEaserBookings(id: string) {
@@ -48,7 +77,7 @@ export class EaserService {
   }
 
   async createEaserAccount(easerDetails: NewEaserDto): Promise<Easer> {
-    //easerDetails.easerId = 'EAS' + this.generateEaserId();
+    easerDetails.easerTag = 'EAS' + this.generateEaserId();
     easerDetails.referralCode =
       'https://eatse.ng/?email=' +
       easerDetails.email +
@@ -56,7 +85,7 @@ export class EaserService {
       easerDetails.phone;
     const newEaser = await this.easerModel.create(easerDetails);
     //await this.mailService.sendUserRegistrationConfirmation(newEaser, email_verification_token);
-    
+
     return newEaser;
   }
 
@@ -99,7 +128,7 @@ export class EaserService {
   // fetch all clients paired with easer
   async retrieveClientsAssignedToEaser(easer_id: string): Promise<Client[]> {
     const clients = await this.clientModel.find({
-      $and: [{ easer: easer_id}]
+      $and: [{ easer: easer_id }],
     });
 
     return clients;
