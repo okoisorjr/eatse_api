@@ -39,7 +39,11 @@ export class BookingService {
   async saveNewBooking(booking: NewBookingDto) {
     const dates = [];
 
-    if (booking.buildingType !== 'commercial' && booking.rooms < 2 && booking.service !== Service.FUMIGATION) {
+    if (
+      booking.buildingType !== 'commercial' &&
+      booking.rooms < 2 &&
+      booking.service !== Service.FUMIGATION
+    ) {
       throw new HttpException(
         'This is not a commercial property, please specify the number of rooms',
         HttpStatus.BAD_REQUEST,
@@ -108,6 +112,10 @@ export class BookingService {
         .populate({
           path: 'client',
           select: 'id firstname lastname phone email referralCode',
+        })
+        .populate({
+          path: 'address',
+          select: 'id country state city street zip_code',
         })
         .populate({
           path: 'easer',

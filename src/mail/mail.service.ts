@@ -11,7 +11,10 @@ import { Client } from 'src/clients/schema/client.schema';
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendUserRegistrationConfirmation(new_user: Client | Easer | Employee, email_verification_token: string) {
+  async sendUserRegistrationConfirmation(
+    new_user: Client | Easer | Employee,
+    email_verification_token: string,
+  ) {
     const url = `http://localhost:4203/auth/verify-account?token=${email_verification_token}`;
 
     try {
@@ -25,7 +28,38 @@ export class MailService {
         },
       });
     } catch (error) {
-      throw new HttpException('The operation failed!', HttpStatus.INTERNAL_SERVER_ERROR)
+      throw new HttpException(
+        'The operation failed!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async sendEmailVerificationCompletionMail() {}
+
+  async sendSuccessfulLoginAttemptMail() {}
+
+  async sendUserPasswordResetLink(  
+    user: any,
+    password_reset_token: string,
+  ) {
+    const url = `http://localhost:8000/auth/new-password?user=${user.id}&token=${password_reset_token}`;
+
+    try {
+      await this.mailerService.sendMail({
+        to: user.email,
+        subject: `Reset you password!`,
+        template: './password-reset-mail',
+        context: {
+          name: user.firstname,
+          url,
+        },
+      });
+    } catch (error) {
+      throw new HttpException(
+        'The operation failed!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

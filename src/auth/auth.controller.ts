@@ -80,10 +80,26 @@ export class AuthController {
   }
 
   @Post('easer')
-  async signInEaser(@Body() body: LoginDto,  @Res({ passthrough: true }) response: Response) {
+  async signInEaser(
+    @Body() body: LoginDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     let easer = await this.authService.validateUser(body);
     response.appendHeader('Authorization', `Bearer ${easer.access_token}`),
       response.send(easer);
+  }
+
+  @Post('password-reset-link')
+  async sendPasswordResetLink(@Body() body: any) {
+    return await this.authService.sendPasswordResetLink(body);
+  }
+
+  @UseGuards()
+  @Post('reset-password')
+  async resetPassword(
+    @Body() body: any,
+  ) {
+    return await this.authService.passwordReset(body);
   }
 
   @UseGuards(AuthGuard)
