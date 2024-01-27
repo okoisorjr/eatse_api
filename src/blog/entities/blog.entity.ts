@@ -10,10 +10,10 @@ export class Blog {
   title: string;
 
   @Prop()
-  description: string;
+  blogImgUrl: string;
 
   @Prop()
-  tags: string[];
+  category: string;
 
   @Prop()
   content: string;
