@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Controller,
   Get,
@@ -25,13 +26,8 @@ export class AccountDetailsController {
     return this.accountDetailsService.findAll();
   }
 
-  @Get(':account_id')
-  findOne(@Param('account_id') account_id: string) {
-    return this.accountDetailsService.findOne(account_id);
-  }
-
-  @Get(':easer_id/easer')
-  getEaserAccountDetails(@Param('easer_id') easer_id: string){
+  @Get('easer/:easer_id/account')
+  getEaserAccountDetails(@Param('easer_id') easer_id: string) {
     return this.accountDetailsService.getEaserBankAccountDetails(easer_id);
   }
 
@@ -43,7 +39,12 @@ export class AccountDetailsController {
     return this.accountDetailsService.update(+id, updateAccountDetailDto);
   }
 
-  @Delete(':account_id')
+  @Get(':account_id')
+  findOne(@Param('account_id') account_id: string) {
+    return this.accountDetailsService.findOne(account_id);
+  }
+
+  @Delete('easer/:account_id')
   remove(@Param('account_id') account_id: string) {
     return this.accountDetailsService.remove(account_id);
   }

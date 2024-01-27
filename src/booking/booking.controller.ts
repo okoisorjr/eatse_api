@@ -25,6 +25,11 @@ export class BookingController {
     return this.bookingService.saveNewBooking(body);
   }
 
+  @Get('client/:client_id/bookings')
+  getClientBookings(@Param() client_id: string) {
+    return this.bookingService.getAllClientsBooking(client_id);
+  }
+
   @Put('assign_easer')
   assignBookingEaser(@Body() data: UpdateBookingEaserDto) {
     return this.bookingService.assignEaserToBooking(data);

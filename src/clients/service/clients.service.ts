@@ -1,8 +1,9 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import { Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { NewClientDto } from '../clientDto/newClient.dto';
-import { Model, Connection } from 'mongoose';
-import { InjectModel, InjectConnection } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 import { Client } from '../schema/client.schema';
 import { Easer } from 'src/easers/schema/easer.schema';
 import { updateAssignedEaserDto } from '../clientDto/updateAssignedEaser.dto';
@@ -18,7 +19,7 @@ export interface EaserData {
 
 @Injectable()
 export class ClientsService {
-  salt: number = 10;
+  salt = 10;
 
   constructor(
     @InjectModel(Client.name) private clientModel: Model<Client>,
@@ -54,7 +55,8 @@ export class ClientsService {
   async getOneClient(id: string) {
     const requestedClient = await this.clientModel
       .findById(id)
-      .populate('easer', '', this.easerModel);
+      .populate('easer', '', this.easerModel)
+      .populate('addresses');
 
     if (!requestedClient) {
       throw new NotFoundException('Client Not Found!');

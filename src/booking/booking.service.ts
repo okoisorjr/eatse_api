@@ -2,7 +2,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Model } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { Booking } from './schema/booking.schema';
 import { NewBookingDto } from './bookingDto/newBooking.dto';
 import { Client } from 'src/clients/schema/client.schema';
@@ -17,6 +17,7 @@ export class BookingService {
     @InjectModel(Booking.name) private bookingModel: Model<Booking>,
     @InjectModel(Client.name) private clientModel: Model<Client>,
     @InjectModel(Errand.name) private errandsModel: Model<Errand>,
+    @InjectModel(Booking.name) private easerModel: Model<Booking>,
     @InjectModel(Laundry.name) private laundryModel: Model<Laundry>, //@InjectModel(Notification.name) private notificationModel: Model<Notification>
   ) {}
 
@@ -155,11 +156,8 @@ export class BookingService {
   }
 
   async assignEaserToBooking(data: UpdateBookingEaserDto) {
-    let assigned_booking;
-    const booking = await this.bookingModel.findById(data.booking_id);
-    console.log('found booking:', booking)
     try {
-      assigned_booking = await this.bookingModel.findByIdAndUpdate(
+      const assigned_booking = await this.bookingModel.findByIdAndUpdate(
         data.booking_id,
         { easer: data.easer_id },
         {
@@ -167,8 +165,9 @@ export class BookingService {
           new: true,
         },
       );
-      console.log(assigned_booking);
-      return assigned_booking;
+      //console.log(assigned_booking);
+
+      return assigned_booking._id;
     } catch (error) {
       console.log(error);
     }
@@ -218,5 +217,14 @@ export class BookingService {
       { arrayFilters: [{ 'element._id': dateId }] },
     );
     return update;
+  }
+
+  async getAllClientsBooking(client_id: string): Promise<Booking[]> {
+    console.log('client_id selected: ' , client_id);
+    const client_bookings = await this.bookingModel
+      .find({ client: new Types.ObjectId(client_id) })
+      .populate('easer')
+      .exec();
+    return client_bookings;
   }
 }

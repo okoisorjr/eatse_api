@@ -1,5 +1,7 @@
+/* eslint-disable prettier/prettier */
 import { Schema, Prop, SchemaFactory, raw } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
+import { Address } from 'src/address/entities/address.entity';
 import { Easer } from 'src/easers/schema/easer.schema';
 import { Role } from 'src/shared/roles.enum';
 
@@ -36,6 +38,9 @@ export class Client {
   @Prop()
   profile_img_url: string;
 
+  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Address' }])
+  addresses: Address[];
+
   /* @Prop(
     raw({
       country: { type: String, required: true },
@@ -47,7 +52,6 @@ export class Client {
     }),
   )
   address: Record<string, any>; */
-
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Easer' })
   easer: Easer;
 

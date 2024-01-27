@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Injectable,
   HttpException,
@@ -5,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { Client } from 'src/clients/schema/client.schema';
 import { LoginDto } from './authDto/login.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -14,7 +15,7 @@ import * as bcrypt from 'bcrypt';
 import { MailService } from 'src/mail/mail.service';
 import { ConfigService } from '@nestjs/config';
 import { ChangePasswordDto } from './authDto/change-password.dto';
-import { ResourceCreated } from 'src/shared/resource-created';
+//import { ResourceCreated } from 'src/shared/resource-created';
 import { PasswordResetToken } from './PasswordResetToken.schema';
 
 @Injectable()
@@ -104,7 +105,7 @@ export class AuthService {
       throw new UnauthorizedException('user not found!');
     }
 
-    let hashed_password = await bcrypt.compare(user.password, client.password);
+    const hashed_password = await bcrypt.compare(user.password, client.password);
 
     if (!hashed_password) {
       throw new UnauthorizedException('email or password is incorrect!');
@@ -117,7 +118,7 @@ export class AuthService {
       { upsert: true, new: true },
     );
 
-    let logged_in_user = {
+    const logged_in_user = {
       id: client.id,
       firstname: client.firstname,
       lastname: client.lastname,
@@ -144,7 +145,7 @@ export class AuthService {
       throw new UnauthorizedException('user not found!');
     }
 
-    let hashed_password = await bcrypt.compare(user.password, easer.password);
+    const hashed_password = await bcrypt.compare(user.password, easer.password);
 
     if (!hashed_password) {
       throw new UnauthorizedException('email or password is incorrect!');
@@ -157,7 +158,7 @@ export class AuthService {
       { upsert: true, new: true },
     );
 
-    let logged_in_user = {
+    const logged_in_user = {
       id: easer.id,
       firstname: easer.firstname,
       lastname: easer.lastname,
@@ -386,7 +387,7 @@ export class AuthService {
       throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
     }
 
-    let hashed_password = await bcrypt.compare(
+    const hashed_password = await bcrypt.compare(
       changePasswordDto.oldPassword,
       client.password,
     );
@@ -419,7 +420,7 @@ export class AuthService {
       throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
     }
 
-    let hashed_password = await bcrypt.compare(
+    const hashed_password = await bcrypt.compare(
       changePasswordDto.oldPassword,
       easer.password,
     );
@@ -470,5 +471,7 @@ export class AuthService {
     return tokens;
   }
 
-  async logoutUser() {}
+  async logoutUser() {
+    return;
+  }
 }

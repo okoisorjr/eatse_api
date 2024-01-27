@@ -48,13 +48,17 @@ export class EaserService {
       );
     }
 
-    easers.map(async (easer) => {
-      easer.clientsCount = await this.bookingModel
-        .find({
-          easer: easer._id,
-          $and: [{ expiryDate: { $lte: new Date().toDateString() } }],
-        })
-        .count();
+    easers.forEach(async (easer) => {
+      const result = await this.bookingModel.aggregate([
+        { $match: { easer: easer._id, expired: false } },
+        { $group: { _id: '$client', count: { $sum: 1 } } },
+      ]);
+
+      await this.easerModel.findByIdAndUpdate(
+        easer._id,
+        { clientsCount: result.length },
+        { new: true, upsert: true },
+      );
     });
 
     return await easers;
@@ -66,7 +70,9 @@ export class EaserService {
   }
 
   async getOneEaser(id: string): Promise<Easer> {
-    const easer = await this.easerModel.findById({ _id: id });
+    const easer = (await this.easerModel.findById({ _id: id })).populate({
+      path: 'address',
+    });
     console.log(easer);
 
     if (!easer) {

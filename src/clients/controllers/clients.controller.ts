@@ -16,8 +16,8 @@ import { NewClientDto } from '../clientDto/newClient.dto';
 import { updateAssignedEaserDto } from '../clientDto/updateAssignedEaser.dto';
 import { AddressDto } from 'src/clients/clientDto/address.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { Roles } from 'src/decorators/roles.decorator';
-import { Role } from 'src/shared/roles.enum';
+//import { Roles } from 'src/decorators/roles.decorator';
+//import { Role } from 'src/shared/roles.enum';
 
 @Controller('clients')
 export class ClientsController {
@@ -30,7 +30,7 @@ export class ClientsController {
     return this.clientService.getAllClients();
   }
 
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Get(':id')
   getOneClient(@Param('id') id: string) {
     return this.clientService.getOneClient(id);

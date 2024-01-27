@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsEmpty } from 'class-validator';
 
 export class NewBookingDto {
   @IsNotEmpty()
@@ -7,7 +7,7 @@ export class NewBookingDto {
 
   @IsNotEmpty()
   frequency: string;
-  
+
   @IsNotEmpty()
   buildingType: string;
 
@@ -32,9 +32,12 @@ export class NewBookingDto {
   @IsNotEmpty()
   arrivalTime: string;
 
-  @IsNotEmpty()
+  @IsEmpty()
   startingDate: string;
 
-  @IsNotEmpty()
+  @IsEmpty()
   expiryDate: string;
+
+  @IsNotEmpty()
+  expired: boolean;
 }

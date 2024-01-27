@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Injectable,
   HttpException,
@@ -11,7 +12,7 @@ import { Address } from './entities/address.entity';
 import { Model } from 'mongoose';
 import { Easer } from 'src/easers/schema/easer.schema';
 import { Client } from 'src/clients/schema/client.schema';
-import { ResourceCreated } from 'src/shared/resource-created';
+//import { ResourceCreated } from 'src/shared/resource-created';
 
 @Injectable()
 export class AddressService {
@@ -29,7 +30,7 @@ export class AddressService {
 
     if (found_easer) {
       // if account belongs to easer check if they have provided address before
-      let found_easer_address = await this.addressModel.findOne({
+      const found_easer_address = await this.addressModel.findOne({
         user: found_easer,
       });
       // if address found for easer throw error
@@ -51,9 +52,19 @@ export class AddressService {
     new_address.zip_code = createAddressDto.zip_code;
     new_address.user = createAddressDto.user;
 
-    const saved_address = new_address.save();
+    const saved_address = await new_address.save();
 
-    return saved_address;
+    if (saved_address) {
+      await this.clientModel.findByIdAndUpdate(
+        createAddressDto.user,
+        {
+          $push: { address: saved_address._id },
+        },
+        { upsert: true, new: true },
+      );
+    }
+
+    return new_address._id;
   }
 
   async findAll(): Promise<Address[]> {
@@ -91,7 +102,7 @@ export class AddressService {
       }
     }
 
-    let address = await this.addressModel.findOneAndUpdate(
+    const address = await this.addressModel.findOneAndUpdate(
       { _id: address_id },
       updateAddressDto,
       { upsert: true, new: true },
@@ -100,7 +111,10 @@ export class AddressService {
   }
 
   async remove(address_id: string) {
-    const content = await this.addressModel.findOneAndDelete({ _id: address_id });
-    return new ResourceCreated;
+    const content = await this.addressModel.findOneAndDelete({
+      _id: address_id,
+    });
+    return content.ok;
+    //return new ResourceCreated().id;
   }
 }

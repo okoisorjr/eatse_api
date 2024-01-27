@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Employee } from 'src/employee/entities/employee.entity';
@@ -10,10 +11,13 @@ export class Blog {
   title: string;
 
   @Prop()
-  description: string;
+  type: string;
 
   @Prop()
-  tags: string[];
+  category: string;
+
+  @Prop()
+  blogImgUrl: string;
 
   @Prop()
   content: string;

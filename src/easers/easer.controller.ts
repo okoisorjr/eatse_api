@@ -40,9 +40,9 @@ export class EaserController {
     return this.bookingService.getEaserPresentDayBookings(id);
   }
 
-  @Get(':id')
-  getSingleEaser(@Param('id') id: string) {
-    return this.easerService.getOneEaser(id);
+  @Get(':easer_id')
+  getSingleEaser(@Param('easer_id') easer_id: string) {
+    return this.easerService.getOneEaser(easer_id);
   }
 
   @Get('state/:state/city/:city')

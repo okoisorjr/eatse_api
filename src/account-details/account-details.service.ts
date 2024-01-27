@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateAccountDetailDto } from './dto/create-account-detail.dto';
 import { UpdateAccountDetailDto } from './dto/update-account-detail.dto';
@@ -85,9 +86,11 @@ export class AccountDetailsService {
   }
 
   async getEaserBankAccountDetails(easer_id): Promise<AccountDetail> {
-    const easer_acct_details = await this.accountDetailModel.findOne({
-      $and: [{ easer: easer_id }],
-    });
+    const easer_acct_details = await this.accountDetailModel
+      .findOne({
+        $and: [{ easer: easer_id }],
+      })
+      .populate({ path: 'easer' });
     if (!easer_acct_details) {
       throw new HttpException(
         'No account information was found for this easer account!',
