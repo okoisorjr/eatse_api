@@ -19,12 +19,22 @@ export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
+  //@UseInterceptors(FileInterceptor('file'))
   create(
-    @UploadedFile() file: Express.Multer.File,
+    //@UploadedFile() file: Express.Multer.File,
     @Body() createBlogDto: CreateBlogDto,
   ) {
-    return this.blogService.create(file.originalname, file.mimetype, file.buffer, createBlogDto);
+    return this.blogService.create(/* file.originalname, file.mimetype, file.buffer, */ createBlogDto);
+  }
+
+  @Post('upload-blog-image')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+    return await this.blogService.uploadImage(
+      file.originalname,
+      file.mimetype,
+      file.buffer,
+    );
   }
 
   @Get()
