@@ -1,12 +1,13 @@
 /* eslint-disable prettier/prettier */
 import { Prop, Schema, SchemaFactory, raw } from '@nestjs/mongoose';
-import { SchemaTypes, Types, HydratedDocument } from 'mongoose';
+import * as mongoose from 'mongoose';
 import { Address } from 'src/address/entities/address.entity';
-import { Client, ClientDocument } from 'src/clients/schema/client.schema';
+import { Client } from 'src/clients/schema/client.schema';
 import { Easer } from 'src/easers/schema/easer.schema';
 import { RoomPrice } from 'src/room-prices/entities/room-price.entity';
+import { CancellationStages } from 'src/shared/cancellation-stages.enum';
 
-export type BookingDocument = HydratedDocument<Booking>;
+export type BookingDocument = mongoose.HydratedDocument<Booking>;
 
 @Schema({ timestamps: true })
 export class Booking {
@@ -19,7 +20,7 @@ export class Booking {
   @Prop({ required: true })
   frequency: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'Address' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Address' })
   address: Address;
 
   @Prop({ required: true })
@@ -41,11 +42,11 @@ export class Booking {
   @Prop()
   house_setting: RoomPrice[];
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'Easer' })
-  easer: Types.ObjectId;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Easer' })
+  easer: Easer;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'Client' })
-  client: string | Types.ObjectId | ClientDocument;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Client' })
+  client: Client;
 
   @Prop()
   arrivalTime: string;
@@ -53,8 +54,11 @@ export class Booking {
   @Prop()
   cost: number;
 
-  @Prop()
+  @Prop({ required: true, default: false })
   active: boolean;
+
+  @Prop({ required: true, default: CancellationStages.NOT_INITIATED })
+  cancellation: CancellationStages;
 
   @Prop()
   message: string;

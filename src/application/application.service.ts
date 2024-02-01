@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Injectable,
   Req,
@@ -16,6 +17,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Application } from './entities/application.entity';
+import { Position } from './entities/position.entity';
 
 @Injectable()
 export class ApplicationService {
@@ -27,6 +29,7 @@ export class ApplicationService {
     private readonly configService: ConfigService,
     @InjectModel(Application.name)
     private readonly applicationModel: mongoose.Model<Application>,
+    @InjectModel(Position.name) private readonly positionModel: mongoose.Model<Position>
   ) {}
 
   AWS_S3_BUCKET = 'eatse';
@@ -72,6 +75,11 @@ export class ApplicationService {
     new_application.user = createApplicationDto.user;
     let saved_application = await new_application.save();
     return saved_application;
+  }
+
+  async createNewPosition() {
+    const position = await this.positionModel.create()
+    return;
   }
 
   async findAll() {

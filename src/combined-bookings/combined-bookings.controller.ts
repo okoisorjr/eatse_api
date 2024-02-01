@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { CombinedBookingsService } from './combined-bookings.service';
 import { CreateCombinedBookingDto } from './dto/create-combined-booking.dto';

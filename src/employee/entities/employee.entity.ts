@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Departments } from 'src/shared/departments.enum';
@@ -37,7 +38,7 @@ export class Employee {
   @Prop({ required: true })
   referral_link: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, default: 0 })
   referrals: number;
 
   @Prop({ required: true })

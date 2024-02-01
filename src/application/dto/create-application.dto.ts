@@ -1,6 +1,6 @@
+/* eslint-disable prettier/prettier */
 import {
   IsEmail,
-  IsMimeType,
   IsMongoId,
   IsNotEmpty,
   IsPhoneNumber,

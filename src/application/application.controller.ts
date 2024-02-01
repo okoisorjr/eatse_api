@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Controller,
   Get,
@@ -25,6 +26,11 @@ export class ApplicationController {
     @Body() createApplicationDto: CreateApplicationDto,
   ) {
     return this.applicationService.create(file.originalname, file.mimetype, file.buffer, createApplicationDto);
+  }
+
+  @Post()
+  async createNewPosition() {
+    return await this.applicationService.createNewPosition();
   }
 
   @Get()

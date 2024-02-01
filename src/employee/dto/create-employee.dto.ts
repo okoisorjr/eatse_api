@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { IsEnum, IsNotEmpty, MinLength } from 'class-validator';
 import { Departments } from 'src/shared/departments.enum';
 import { Role } from 'src/shared/roles.enum';
@@ -28,12 +29,12 @@ export class CreateEmployeeDto {
   @IsEnum(Salaries)
   salary: Salaries;
 
-  @IsNotEmpty()
-  referrals: number;
+  /* @IsNotEmpty()
+  referrals: number; */
 
   @IsNotEmpty()
   @MinLength(8)
   password: string;
 
-  file: any;
+  //file: any;
 }

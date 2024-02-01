@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { IsMongoId, IsNotEmpty } from 'class-validator';
 
 export class CreateBlogDto {
@@ -11,4 +12,8 @@ export class CreateBlogDto {
   @IsNotEmpty()
   @IsMongoId()
   author: string;
+
+  /* @IsNotEmpty()
+  @IsMongoId()
+  last_modified_by: string; */
 }
