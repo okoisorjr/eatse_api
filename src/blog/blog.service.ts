@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
@@ -47,7 +48,7 @@ export class BlogService {
       return err;
     } */
     const new_post = await this.blogModel.create(createBlogDto);
-    return new_post;
+    return new_post.id;
   }
 
   async uploadImage(filename: string, filetype: string, file: Buffer) {
@@ -80,19 +81,28 @@ export class BlogService {
     };
   }
 
-  findAll() {
-    return `This action returns all blog`;
+  async findAll(query?: any) {
+    const blogs = await this.blogModel
+      .find()
+      .sort({ createdAt: -1 })
+      .limit(query ? query.limit : 0);
+    return blogs;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} blog`;
+  async findOne(id: string) {
+    const blog = await this.blogModel.findById(id);
+    return blog;
   }
 
-  update(id: number, updateBlogDto: UpdateBlogDto) {
-    return `This action updates a #${id} blog`;
+  async update(id: string, updateBlogDto: UpdateBlogDto) {
+    const blog = await this.blogModel.findByIdAndUpdate(id, updateBlogDto, {
+      new: true,
+      upsert: true,
+    });
+    return blog.id;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} blog`;
+  async remove(id: string) {
+    return await this.blogModel.findByIdAndDelete(id);
   }
 }

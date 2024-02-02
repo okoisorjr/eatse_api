@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export enum Departments {
   IT = 'IT',
   MARKETING = 'MARKETING',

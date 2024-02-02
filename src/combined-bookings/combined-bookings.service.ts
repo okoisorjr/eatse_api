@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateCombinedBookingDto } from './dto/create-combined-booking.dto';
 import { UpdateCombinedBookingDto } from './dto/update-combined-booking.dto';

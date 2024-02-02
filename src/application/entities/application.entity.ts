@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Client } from 'src/clients/schema/client.schema';
@@ -7,13 +8,13 @@ export type ApplicationDocument = mongoose.HydratedDocument<Application>;
 
 @Schema({ timestamps: true })
 export class Application {
-  @Prop()
+  @Prop({ required: true })
   fullname: string;
 
-  @Prop()
+  @Prop({ required: true })
   email: string;
 
-  @Prop()
+  @Prop({ required: true })
   phone: string;
 
   @Prop()
@@ -28,11 +29,11 @@ export class Application {
   @Prop({ required: true })
   resumeURL: string;
 
-  @Prop({
+  /* @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Client' || 'Easer',
   })
-  user: string;
+  user: string; */
 }
 
 export const ApplicationSchema = SchemaFactory.createForClass(Application);

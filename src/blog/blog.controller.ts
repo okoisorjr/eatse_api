@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Controller,
   Get,
@@ -8,6 +9,7 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
@@ -20,11 +22,13 @@ export class BlogController {
 
   @Post()
   //@UseInterceptors(FileInterceptor('file'))
-  create(
+  async create(
     //@UploadedFile() file: Express.Multer.File,
     @Body() createBlogDto: CreateBlogDto,
   ) {
-    return this.blogService.create(/* file.originalname, file.mimetype, file.buffer, */ createBlogDto);
+    return await this.blogService.create(
+      /* file.originalname, file.mimetype, file.buffer, */ createBlogDto,
+    );
   }
 
   @Post('upload-blog-image')
@@ -38,22 +42,26 @@ export class BlogController {
   }
 
   @Get()
-  findAll() {
-    return this.blogService.findAll();
+  findAll(@Query() query: number) {
+    if (query) {
+      return this.blogService.findAll(query);
+    } else {
+      return this.blogService.findAll();
+    }
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.blogService.findOne(+id);
+    return this.blogService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto) {
-    return this.blogService.update(+id, updateBlogDto);
+    return this.blogService.update(id, updateBlogDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.blogService.remove(+id);
+    return this.blogService.remove(id);
   }
 }

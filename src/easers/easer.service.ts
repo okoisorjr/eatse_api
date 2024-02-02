@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { Easer } from './schema/easer.schema';
 import { NewEaserDto } from './easerDto/newEaser.dto';
 import { BookingService } from 'src/booking/booking.service';
@@ -14,16 +14,26 @@ import { AddressDto } from 'src/clients/clientDto/address.dto';
 import { Client } from 'src/clients/schema/client.schema';
 import { MailService } from 'src/mail/mail.service';
 import { Booking } from 'src/booking/schema/booking.schema';
+import { ConfigService } from '@nestjs/config';
+import { S3Client } from '@aws-sdk/client-s3';
+import uploadFile from 'src/helpers/upload-profile-pic';
 
 @Injectable()
 export class EaserService {
+  private readonly s3Client = new S3Client({
+    region: this.configService.getOrThrow('AWS_S3_REGION'),
+  });
+
   constructor(
+    private readonly configService: ConfigService,
     @InjectModel(Easer.name) private easerModel: Model<Easer>,
     @InjectModel(Client.name) private clientModel: Model<Client>,
     @InjectModel(Booking.name) private bookingModel: Model<Booking>,
     private readonly bookingService: BookingService,
     private readonly mailService: MailService,
   ) {}
+
+  AWS_S3_BUCKET = 'easers-profile';
 
   generateEaserId() {
     const id = [];
@@ -157,4 +167,71 @@ export class EaserService {
       return easer;
     }
   } */
+
+  async uploadProfile(
+    easer_id: string,
+    filename: string,
+    filetype: string,
+    file: Buffer,
+  ) {
+    const easer = await this.easerModel.findById(easer_id);
+    console.log(easer);
+    if (!easer) {
+      throw new HttpException(
+        'Oops...resource not found!',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const upload_result = await uploadFile(
+      //easer_id,
+      filename,
+      filetype,
+      file,
+      //this.s3Client,
+      this.AWS_S3_BUCKET,
+    );
+
+    /* const key = filename + Date.now();
+    let fileURL: PutObjectCommandOutput;
+    try {
+      fileURL = await this.s3Client.send(
+        new PutObjectCommand({
+          Bucket: this.AWS_S3_BUCKET,
+          Key: key,
+          Body: file,
+          ACL: 'public-read',
+          ContentType: filetype,
+        }),
+      );
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+
+    if (fileURL.$metadata.httpStatusCode !== 200) {
+      throw new HttpException(
+        'FILE WAS NOT SAVED TO BUCKET!',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+
+    client.profile_pic = `https://${this.AWS_S3_BUCKET}.s3.amazonaws.com/${key}`; */
+    await easer.updateOne(
+      { profile_pic: upload_result },
+      { upsert: true, new: true },
+    );
+
+    /* await this.clientModel.findByIdAndUpdate(
+      client_id,
+      {
+        profile_pic: `https://${this.AWS_S3_BUCKET}.s3.amazonaws.com/${key}`,
+      },
+      { upsert: true, new: true },
+    ); */
+
+    return {
+      id: upload_result,
+    };
+  }
 }

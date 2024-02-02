@@ -10,6 +10,8 @@ import { Errand } from 'src/errands/schema/errand.schema';
 import { Laundry } from 'src/laundry/entities/laundry.entity';
 import { Service } from 'src/shared/services.enum';
 import { UpdateBookingEaserDto } from './bookingDto/UpdateBookingEaser.dto';
+import { CancellationStages } from 'src/shared/cancellation-stages.enum';
+import { UpdateBookingDto } from './bookingDto/UpdateBooking.dto';
 
 @Injectable()
 export class BookingService {
@@ -127,6 +129,7 @@ export class BookingService {
           select: 'id country state city zip_code street',
         })
         .limit(query ? query.limit : 0);
+      console.log(bookings);
       return bookings;
     } catch (error) {
       console.log(error);
@@ -159,7 +162,7 @@ export class BookingService {
     try {
       const assigned_booking = await this.bookingModel.findByIdAndUpdate(
         data.booking_id,
-        { easer: data.easer_id },
+        { easer: data.easer_id, active: true },
         {
           upsert: true,
           new: true,
@@ -220,11 +223,45 @@ export class BookingService {
   }
 
   async getAllClientsBooking(client_id: string): Promise<Booking[]> {
-    console.log('client_id selected: ' , client_id);
+    const client = await this.clientModel.findById(client_id);
+
+    if (!client) {
+      throw new HttpException(
+        'Oops...resource not found!',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    //console.log('client_id selected: ' , client_id);
     const client_bookings = await this.bookingModel
-      .find({ client: new Types.ObjectId(client_id) })
+      .find({
+        client: client.id,
+        expired: false,
+        cancellation: CancellationStages.NOT_INITIATED,
+        active: true,
+      })
       .populate('easer')
+      .populate('client')
+      .populate('address')
       .exec();
     return client_bookings;
+  }
+
+  async cancelOrder(booking_id: string, update: UpdateBookingDto) {
+    console.log(booking_id);
+    console.log(update);
+    try {
+      const booking = await this.bookingModel.findByIdAndUpdate(
+        booking_id,
+        { active: update.active, cancellation: update.cancellation },
+        { upsert: true, new: true },
+      );
+      return booking;
+    } catch (error) {
+      throw new HttpException(
+        'Oops...resource not found!',
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 }

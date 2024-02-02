@@ -39,8 +39,11 @@ export class Easer {
   @Prop({ default: 0 })
   clientsCount: number;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Address'})
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Address' })
   address: Address;
+
+  @Prop()
+  profile_pic: string;
 
   /* @Prop(
     raw({
@@ -57,7 +60,7 @@ export class Easer {
   @Prop({ required: true, default: false })
   activeUser: boolean;
 
-  @Prop({ required: true})
+  @Prop({ required: true })
   service: Service;
 
   @Prop({ required: true })
@@ -67,11 +70,10 @@ export class Easer {
   refreshToken: string;
 
   @Prop({ default: false })
-  verified: boolean
+  verified: boolean;
 
   /* @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Client' }])
   assignedClients: Client[]; */
-  
 }
 
 export const EaserSchema = SchemaFactory.createForClass(Easer);

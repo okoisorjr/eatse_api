@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export enum Service {
   HOUSEKEEPING = 'house-keeping',
   DISPATCH_DELIVERY = 'dispatch-delivery',

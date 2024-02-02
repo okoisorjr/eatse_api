@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { IsNotEmpty, IsEmail, IsEnum } from 'class-validator';
 import { Role } from 'src/shared/roles.enum';
 
@@ -19,7 +20,7 @@ export class NewClientDto {
   @IsEnum(Role)
   role: Role;
 
-  easer: string;
+  /* easer: string; */
 
   @IsNotEmpty()
   password: string;

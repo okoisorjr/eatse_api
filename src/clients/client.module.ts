@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Module, Global } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ClientsController } from './controllers/clients.controller';

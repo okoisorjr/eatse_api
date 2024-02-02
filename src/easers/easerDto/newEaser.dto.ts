@@ -26,8 +26,8 @@ export class NewEaserDto {
 
   referralCode: string;
 
-  @IsEnum(Service)
-  service: Service
+  /* @IsEnum(Service)
+  service: Service */
 
   @IsNotEmpty()
   password: string;

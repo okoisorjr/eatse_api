@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Injectable,
   Req,
@@ -16,6 +17,10 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Application } from './entities/application.entity';
+import { Position } from './entities/position.entity';
+import { Client } from 'src/clients/schema/client.schema';
+import uploadFile from 'src/helpers/upload-profile-pic';
+import { Easer } from 'src/easers/schema/easer.schema';
 
 @Injectable()
 export class ApplicationService {
@@ -25,42 +30,19 @@ export class ApplicationService {
 
   constructor(
     private readonly configService: ConfigService,
+    @InjectModel(Client.name)
+    private readonly clientModel: mongoose.Model<Client>,
+    @InjectModel(Easer.name)
+    private readonly easerModel: mongoose.Model<Easer>,
     @InjectModel(Application.name)
     private readonly applicationModel: mongoose.Model<Application>,
+    @InjectModel(Position.name)
+    private readonly positionModel: mongoose.Model<Position>,
   ) {}
 
-  AWS_S3_BUCKET = 'eatse';
+  AWS_S3_BUCKET = 'eatse-cvs';
 
-  async create(
-    filename: string,
-    filetype: string,
-    file: Buffer,
-    createApplicationDto: CreateApplicationDto,
-  ) {
-    const key = filename + Date.now();
-    let fileURL: PutObjectCommandOutput;
-    try {
-      fileURL = await this.s3Client.send(
-        new PutObjectCommand({
-          Bucket: this.AWS_S3_BUCKET,
-          Key: key,
-          Body: file,
-          ACL: 'public-read',
-          ContentType: filetype,
-        }),
-      );
-    } catch (err) {
-      console.log(err);
-      return err;
-    }
-
-    if (fileURL.$metadata.httpStatusCode !== 200) {
-      throw new HttpException(
-        'FILE WAS NOT SAVED TO BUCKET!',
-        HttpStatus.EXPECTATION_FAILED,
-      );
-    }
-
+  async create(createApplicationDto: CreateApplicationDto) {
     const new_application = new this.applicationModel();
     new_application.fullname = createApplicationDto.fullname;
     new_application.email = createApplicationDto.email;
@@ -68,10 +50,14 @@ export class ApplicationService {
     new_application.portfolioUrl = createApplicationDto.portfolioURL;
     new_application.linkedInProfile = createApplicationDto.linkedInProfile;
     new_application.others = createApplicationDto.others;
-    new_application.resumeURL = `https://${this.AWS_S3_BUCKET}.s3.amazonaws.com/${key}`;
-    new_application.user = createApplicationDto.user;
-    let saved_application = await new_application.save();
-    return saved_application;
+    new_application.resumeURL = createApplicationDto.file;
+    const saved_application = await new_application.save();
+    return { id: saved_application.id };
+  }
+
+  async createNewPosition() {
+    const position = await this.positionModel.create();
+    return;
   }
 
   async findAll() {
@@ -102,5 +88,16 @@ export class ApplicationService {
 
   remove(id: number) {
     return `This action removes a #${id} application`;
+  }
+
+  async uploadCV(filename: string, filetype: string, file: Buffer) {
+    const img_URL = await uploadFile(
+      filename,
+      filetype,
+      file,
+      this.AWS_S3_BUCKET,
+    );
+
+    return img_URL;
   }
 }
