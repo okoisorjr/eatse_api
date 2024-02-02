@@ -1,9 +1,5 @@
 /* eslint-disable prettier/prettier */
-<<<<<<< HEAD
-import { IsNotEmpty, IsEmpty } from 'class-validator';
-=======
 import { IsNotEmpty, IsEmpty } from "class-validator";
->>>>>>> 21fe23169b52e858d8105e404aa19fbab6ba57e7
 
 export class NewBookingDto {
   @IsNotEmpty()

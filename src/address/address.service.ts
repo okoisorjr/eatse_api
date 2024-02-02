@@ -114,7 +114,7 @@ export class AddressService {
     const content = await this.addressModel.findOneAndDelete({
       _id: address_id,
     });
-    return content.ok;
+    return content;
     //return new ResourceCreated().id;
   }
 }
