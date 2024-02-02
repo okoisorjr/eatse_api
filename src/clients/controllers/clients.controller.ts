@@ -10,12 +10,15 @@ import {
   ValidationPipe,
   Put,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { ClientsService } from '../service/clients.service';
 import { NewClientDto } from '../clientDto/newClient.dto';
 import { updateAssignedEaserDto } from '../clientDto/updateAssignedEaser.dto';
 import { AddressDto } from 'src/clients/clientDto/address.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 //import { Roles } from 'src/decorators/roles.decorator';
 //import { Role } from 'src/shared/roles.enum';
 
@@ -28,6 +31,15 @@ export class ClientsController {
   @Get()
   getClients() {
     return this.clientService.getAllClients();
+  }
+
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('upload-profile/:client_id')
+  async uploadProfile(
+    @Param('client_id') client_id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.clientService.uploadProfile(client_id, file.originalname, file.mimetype, file.buffer);
   }
 
   //@UseGuards(AuthGuard)

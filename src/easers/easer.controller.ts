@@ -1,9 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Body, Param, Put, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { EaserService } from './easer.service';
 import { NewEaserDto } from './easerDto/newEaser.dto';
 import { BookingService } from 'src/booking/booking.service';
 import { AddressDto } from 'src/clients/clientDto/address.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('easers')
 export class EaserController {
@@ -15,6 +16,20 @@ export class EaserController {
   @Get()
   async getAllEasers() {
     return await this.easerService.getAllEasers();
+  }
+
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('upload-profile/:easer_id')
+  async uploadProfile(
+    @Param('easer_id') easer_id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.easerService.uploadProfile(
+      easer_id,
+      file.originalname,
+      file.mimetype,
+      file.buffer,
+    );
   }
 
   @Get('clients/:id/list')

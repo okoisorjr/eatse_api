@@ -43,6 +43,9 @@ export class Employee {
 
   @Prop({ required: true })
   password: string;
+
+  @Prop()
+  profile_pic: string;
 }
 
 export const EmployeeSchema = SchemaFactory.createForClass(Employee);

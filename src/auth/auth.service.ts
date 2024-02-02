@@ -127,6 +127,7 @@ export class AuthService {
       role: client.role,
       verified: client.verified,
       referral_code: client.referralCode,
+      profile_pic: client.profile_pic,
     };
 
     return {

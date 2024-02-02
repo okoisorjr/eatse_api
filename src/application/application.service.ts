@@ -73,7 +73,7 @@ export class ApplicationService {
     new_application.others = createApplicationDto.others;
     new_application.resumeURL = `https://${this.AWS_S3_BUCKET}.s3.amazonaws.com/${key}`;
     new_application.user = createApplicationDto.user;
-    let saved_application = await new_application.save();
+    const saved_application = await new_application.save();
     return saved_application;
   }
 

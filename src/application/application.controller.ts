@@ -9,6 +9,8 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApplicationService } from './application.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
@@ -25,10 +27,22 @@ export class ApplicationController {
     @UploadedFile() file: Express.Multer.File,
     @Body() createApplicationDto: CreateApplicationDto,
   ) {
-    return this.applicationService.create(file.originalname, file.mimetype, file.buffer, createApplicationDto);
+    if (file) {
+      return this.applicationService.create(
+        file.originalname,
+        file.mimetype,
+        file.buffer,
+        createApplicationDto,
+      );
+    } else {
+      throw new HttpException(
+        'Please kindly upload your CV/Resume',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
-  @Post()
+  @Post('create-position')
   async createNewPosition() {
     return await this.applicationService.createNewPosition();
   }

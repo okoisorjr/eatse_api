@@ -36,7 +36,7 @@ export class Client {
   role: Role;
 
   @Prop()
-  profile_img_url: string;
+  profile_pic: string;
 
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Address' }])
   addresses: Address[];
