@@ -38,6 +38,6 @@ export class NewBookingDto {
   @IsNotEmpty()
   expiryDate: string;
 
-  @IsNotEmpty()
+  //@IsNotEmpty()
   expired: boolean;
 }

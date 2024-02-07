@@ -23,10 +23,14 @@ export class AddressService {
   ) {}
 
   async create(createAddressDto: CreateAddressDto) {
+    // varaible declaration for client account
+    let found_client;
     // check if the account belongs to an easer
     const found_easer = await this.easerModel.find({
       _id: createAddressDto.user,
     });
+
+    console.log(found_easer);
 
     if (found_easer) {
       // if account belongs to easer check if they have provided address before
@@ -42,7 +46,24 @@ export class AddressService {
       }
     }
 
-    // if user is not easer create new address for client or if user is easer and has not provided address before then create new address
+    if (!found_easer) {
+      try {
+        found_client = await this.clientModel.findById(createAddressDto.user);
+        console.log(found_client);
+        // if account is not client account throw error
+        if (!found_client) {
+          throw new HttpException(
+            'Oops....resource not found!',
+            HttpStatus.NOT_FOUND,
+          );
+        }
+      } catch (error) {
+        throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+
+    // if user is not easer create new address for client 
+    // if user is easer and has no saved address then create new easer address
     const new_address = new this.addressModel();
 
     new_address.country = createAddressDto.country;
@@ -54,7 +75,7 @@ export class AddressService {
 
     const saved_address = await new_address.save();
 
-    if (saved_address) {
+    if (saved_address && found_client) {
       await this.clientModel.findByIdAndUpdate(
         createAddressDto.user,
         {
@@ -62,9 +83,15 @@ export class AddressService {
         },
         { upsert: true, new: true },
       );
+    } else if (saved_address && found_easer) {
+      await this.easerModel.findByIdAndUpdate(
+        createAddressDto.user,
+        { address: saved_address._id },
+        { upsert: true, new: true },
+      );
     }
 
-    return new_address._id;
+    return new_address;
   }
 
   async findAll(): Promise<Address[]> {
@@ -114,7 +141,7 @@ export class AddressService {
     const content = await this.addressModel.findOneAndDelete({
       _id: address_id,
     });
-    return content.ok;
+    return content;
     //return new ResourceCreated().id;
   }
 }

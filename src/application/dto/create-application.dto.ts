@@ -4,6 +4,7 @@ import {
   IsMongoId,
   IsNotEmpty,
   IsPhoneNumber,
+  IsString,
   IsUrl,
 } from 'class-validator';
 
@@ -19,18 +20,15 @@ export class CreateApplicationDto {
   @IsPhoneNumber()
   phone: string;
 
+  //@IsUrl()
   portfolioURL: string;
 
-  //@IsNotEmpty()
-  //@IsUrl()
+  //@IsUrl() 
   linkedInProfile: string;
 
+  //@IsUrl()
   others: string;
 
-  //@IsNotEmpty()
-  file: any;
-
-  //@IsNotEmpty()
-  //@IsMongoId()
-  user: string;
+  @IsNotEmpty()
+  file: string;
 }

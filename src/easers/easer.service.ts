@@ -16,7 +16,7 @@ import { MailService } from 'src/mail/mail.service';
 import { Booking } from 'src/booking/schema/booking.schema';
 import { ConfigService } from '@nestjs/config';
 import { S3Client } from '@aws-sdk/client-s3';
-import uploadPicture from 'src/helpers/upload-profile-pic';
+import uploadFile from 'src/helpers/upload-profile-pic';
 
 @Injectable()
 export class EaserService {
@@ -33,7 +33,7 @@ export class EaserService {
     private readonly mailService: MailService,
   ) {}
 
-  AWS_S3_BUCKET = 'eatse';
+  AWS_S3_BUCKET = 'easers-profile';
 
   generateEaserId() {
     const id = [];
@@ -183,7 +183,7 @@ export class EaserService {
       );
     }
 
-    const upload_result = await uploadPicture(
+    const upload_result = await uploadFile(
       //easer_id,
       filename,
       filetype,

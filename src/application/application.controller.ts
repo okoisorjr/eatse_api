@@ -22,29 +22,29 @@ export class ApplicationController {
   constructor(private readonly applicationService: ApplicationService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  create(
-    @UploadedFile() file: Express.Multer.File,
+  /* @UseInterceptors(FileInterceptor('file')) */
+  async create(
+    /* @UploadedFile() file: Express.Multer.File, */
     @Body() createApplicationDto: CreateApplicationDto,
   ) {
-    if (file) {
-      return this.applicationService.create(
-        file.originalname,
-        file.mimetype,
-        file.buffer,
-        createApplicationDto,
-      );
-    } else {
-      throw new HttpException(
-        'Please kindly upload your CV/Resume',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    return await this.applicationService.create(createApplicationDto);
   }
 
   @Post('create-position')
   async createNewPosition() {
     return await this.applicationService.createNewPosition();
+  }
+
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('upload-cv')
+  async uploadProfile(
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.applicationService.uploadCV(
+      file.originalname,
+      file.mimetype,
+      file.buffer,
+    );
   }
 
   @Get()

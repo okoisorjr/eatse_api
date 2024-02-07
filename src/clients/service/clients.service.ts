@@ -15,7 +15,7 @@ import { updateAssignedEaserDto } from '../clientDto/updateAssignedEaser.dto';
 import { AddressDto } from 'src/clients/clientDto/address.dto';
 import { MailService } from 'src/mail/mail.service';
 import { S3Client } from '@aws-sdk/client-s3';
-import uploadPicture from 'src/helpers/upload-profile-pic';
+import uploadFile from 'src/helpers/upload-profile-pic';
 import { ConfigService } from '@nestjs/config';
 
 export interface EaserData {
@@ -39,7 +39,7 @@ export class ClientsService {
     private readonly mailService: MailService,
   ) {}
 
-  AWS_S3_BUCKET = 'eatse';
+  AWS_S3_BUCKET = 'clients-profile';
 
   async getAllClients(): Promise<Client[]> {
     return await this.clientModel.find().sort({ createdAt: -1 });
@@ -158,7 +158,7 @@ export class ClientsService {
       );
     }
 
-    client.profile_pic = await uploadPicture(
+    client.profile_pic = await uploadFile(
       //client_id,
       filename,
       filetype,

@@ -8,17 +8,20 @@ import {
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 /* eslint-disable @typescript-eslint/no-empty-function */
-const uploadPicture = async (
+const uploadFile = async (
   filename: string,
   filetype: string,
   file: Buffer,
   bucket: string,
+  user_id?: string,
 ) => {
+  // variable declarations
+  let img_URL;
   const s3Client = new S3Client({
     region: process.env.AWS_S3_REGION,
   });
-  console.log(filename, filetype, file, s3Client, bucket);
-  const key = `${filename}${new Date().getTime()}`;
+
+  const key = `${filename}${new Date().getTime()}`.trim();
   let fileURL: PutObjectCommandOutput;
   try {
     fileURL = await s3Client.send(
@@ -42,8 +45,12 @@ const uploadPicture = async (
     );
   }
 
-  console.log(`https://${bucket}.s3.amazonaws.com/${key}`);
-  return `https://${bucket}.s3.amazonaws.com/${key}`;
+  if (user_id) {
+    img_URL = `https://${bucket}.s3.amazonaws.com/${user_id}`;
+  } else {
+    img_URL = `https://${bucket}.s3.amazonaws.com/${key}`;
+  }
+  return { img_URL: img_URL };
 };
 
-export default uploadPicture;
+export default uploadFile;
