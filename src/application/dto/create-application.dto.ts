@@ -21,16 +21,16 @@ export class CreateApplicationDto {
 
   portfolioURL: string;
 
-  @IsNotEmpty()
-  @IsUrl()
+  //@IsNotEmpty()
+  //@IsUrl()
   linkedInProfile: string;
 
   others: string;
 
-  @IsNotEmpty()
+  //@IsNotEmpty()
   file: any;
 
-  @IsNotEmpty()
-  @IsMongoId()
+  //@IsNotEmpty()
+  //@IsMongoId()
   user: string;
 }
