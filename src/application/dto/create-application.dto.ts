@@ -4,8 +4,8 @@ import {
   IsMongoId,
   IsNotEmpty,
   IsPhoneNumber,
-  IsString,
-  IsUrl,
+  /* IsString,
+  IsUrl, */
 } from 'class-validator';
 
 export class CreateApplicationDto {
@@ -20,10 +20,14 @@ export class CreateApplicationDto {
   @IsPhoneNumber()
   phone: string;
 
+  @IsNotEmpty()
+  @IsMongoId()
+  position: string;
+
   //@IsUrl()
   portfolioURL: string;
 
-  //@IsUrl() 
+  //@IsUrl()
   linkedInProfile: string;
 
   //@IsUrl()

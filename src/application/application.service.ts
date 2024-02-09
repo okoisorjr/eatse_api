@@ -21,6 +21,9 @@ import { Position } from './entities/position.entity';
 import { Client } from 'src/clients/schema/client.schema';
 import uploadFile from 'src/helpers/upload-profile-pic';
 import { Easer } from 'src/easers/schema/easer.schema';
+import { CreatePositionDto } from './dto/create-position.dto';
+import { PositionsStatus } from 'src/shared/positions-status.enum';
+import { ApplicantStatus } from 'src/shared/applicant-status.enum';
 
 @Injectable()
 export class ApplicationService {
@@ -47,17 +50,26 @@ export class ApplicationService {
     new_application.fullname = createApplicationDto.fullname;
     new_application.email = createApplicationDto.email;
     new_application.phone = createApplicationDto.phone;
+    new_application.role = createApplicationDto.position;
     new_application.portfolioUrl = createApplicationDto.portfolioURL;
     new_application.linkedInProfile = createApplicationDto.linkedInProfile;
     new_application.others = createApplicationDto.others;
     new_application.resumeURL = createApplicationDto.file;
     const saved_application = await new_application.save();
-    return { id: saved_application.id };
+
+    /* const saved_application = await this.applicationModel.create(
+      createApplicationDto,
+    ); */
+    return {
+      id: saved_application.id,
+      msg: 'application was saved successsfully',
+      status: 200,
+    };
   }
 
-  async createNewPosition() {
-    const position = await this.positionModel.create();
-    return;
+  async createNewPosition(createPositionDto: CreatePositionDto) {
+    const position = await this.positionModel.create(createPositionDto);
+    return { id: position.id };
   }
 
   async findAll() {
@@ -76,6 +88,57 @@ export class ApplicationService {
       );
     }
     return applications;
+  }
+
+  async getApplicationsPerRole(position_id: string) {
+    const applications = await this.applicationModel
+      .find({
+        role: position_id,
+      })
+      .populate('role')
+      .exec();
+    return applications;
+  }
+
+  async findAllJobOpenings() {
+    const current_openings = await this.positionModel.find({
+      status: PositionsStatus.OPENED,
+    });
+    return current_openings;
+  }
+
+  async getApplicantsAnalysis() {
+    let total_applicants = 0;
+    let analysis = await this.applicationModel.aggregate([
+      {
+        $group: {
+          _id: '$applicant_status',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    analysis.forEach((item) => {
+      total_applicants += item.count;
+    });
+
+    analysis = [...analysis, { _id: 'TOTAL', count: total_applicants }];
+    return analysis;
+  }
+
+  async findAllJobs() {
+    const positions = await this.positionModel.find();
+    return positions;
+  }
+
+  async getSinglePosition(position_id) {
+    const position = await this.positionModel.findById(position_id);
+    return position;
+  }
+
+  async getSingleApplicant(applicant_id) {
+    const applicant = await this.applicationModel.findById(applicant_id);
+    return applicant;
   }
 
   findOne(id: number) {

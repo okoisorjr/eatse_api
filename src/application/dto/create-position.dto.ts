@@ -1,26 +1,29 @@
 /* eslint-disable prettier/prettier */
-import { IsEmail, IsEnum, IsMongoId, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Departments } from 'src/shared/departments.enum';
 import { JobTypes } from 'src/shared/job-types.enum';
 
-export class CreateApplicationDto {
+export class CreatePositionDto {
   @IsNotEmpty()
+  @IsString()
   position: string;
 
   @IsNotEmpty()
-  @IsEmail()
-  description: string;
+  @IsEnum(Departments)
+  department: Departments;
+
+  @IsNotEmpty()
+  job_description: string;
 
   @IsNotEmpty()
   renumeration: number;
 
   @IsNotEmpty()
-  yeasrs_of_experience: number;
+  years_of_experience: number;
 
   @IsNotEmpty()
-  //@IsEnum()
+  @IsEnum(JobTypes)
   job_type: JobTypes;
 
-  @IsNotEmpty()
-  @IsMongoId()
   user: string;
 }

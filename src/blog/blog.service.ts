@@ -103,6 +103,14 @@ export class BlogService {
   }
 
   async remove(id: string) {
-    return await this.blogModel.findByIdAndDelete(id);
+    const deleted = await this.blogModel.findByIdAndDelete(id);
+    console.log(deleted.ok);
+    if (deleted.ok === 1) {
+      return {
+        id: id,
+        msg: 'post deleted successfully',
+        status: 200,
+      };
+    }
   }
 }
