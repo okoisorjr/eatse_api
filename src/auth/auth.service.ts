@@ -212,7 +212,7 @@ export class AuthService {
       ),
     ]);
 
-    return { access_token, refresh_token };
+    return await { access_token, refresh_token };
   }
 
   async generateEmailToken(user_id, email) {
@@ -468,8 +468,14 @@ export class AuthService {
       );
     }
 
-    const tokens = this.generateTokens(client.id, client.email);
+    const tokens = await this.generateTokens(client.id, client.email);
+
+    client.refreshToken = tokens.refresh_token;
     return tokens;
+  }
+
+  async refreshEaserToken() {
+
   }
 
   async logoutUser() {

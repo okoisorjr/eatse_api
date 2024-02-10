@@ -128,7 +128,8 @@ export class BookingService {
           path: 'address',
           select: 'id country state city zip_code street',
         })
-        .limit(query ? query.limit : 0);
+        .limit(query ? query.limit : 0)
+        .sort({ createdAt: -1 });
       console.log(bookings);
       return bookings;
     } catch (error) {
@@ -234,10 +235,31 @@ export class BookingService {
 
     //console.log('client_id selected: ' , client_id);
     const client_bookings = await this.bookingModel
+      .find()
+      .populate('easer')
+      .populate('client')
+      .populate('address')
+      .exec();
+    return client_bookings;
+  }
+
+  async getAllClientsActiveBooking(client_id: string): Promise<Booking[]> {
+    const client = await this.clientModel.findById(client_id);
+
+    if (!client) {
+      throw new HttpException(
+        'Oops...resource not found!',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    //console.log('client_id selected: ' , client_id);
+    const client_bookings = await this.bookingModel
       .find({
         client: client.id,
         expired: false,
-        cancellation: CancellationStages.NOT_INITIATED,
+        cancellation:
+          CancellationStages.NOT_INITIATED || CancellationStages.PENDING,
         active: true,
       })
       .populate('easer')

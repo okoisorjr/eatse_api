@@ -58,6 +58,11 @@ export class BookingController {
     return await this.bookingService.getAllClientsBooking(client_id);
   }
 
+  @Get('client/:client_id/bookings/active')
+  async getClientActiveBookings(@Param('client_id') client_id: string) {
+    return await this.bookingService.getAllClientsActiveBooking(client_id);
+  }
+
   @Put(':booking_id/cancel')
   cancelBooking(
     @Param('booking_id') booking_id: string,
