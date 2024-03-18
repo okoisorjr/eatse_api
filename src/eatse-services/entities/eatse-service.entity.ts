@@ -10,7 +10,7 @@ export class EatseService {
   title: string;
 
   @Prop({ required: true })
-  category: string;
+  category: string; 
 
   @Prop({ required: true })
   description: string;

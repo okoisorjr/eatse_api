@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Query } from '@nestjs/common';
 import { EatseServicesService } from './eatse-services.service';
 import { CreateEatseServiceDto } from './dto/create-eatse-service.dto';
 import { UpdateEatseServiceDto } from './dto/update-eatse-service.dto';
@@ -15,8 +15,14 @@ export class EatseServicesController {
   }
 
   @Get()
-  findAll() {
-    return this.eatseServicesService.findAll();
+  findAll(@Query() query: any) {
+    if(query){
+      console.log(query.category);
+      return this.eatseServicesService.findAll(query.category);
+    } else {
+      return this.eatseServicesService.findAll();
+    }
+    
   }
 
   @Get(':service_name')

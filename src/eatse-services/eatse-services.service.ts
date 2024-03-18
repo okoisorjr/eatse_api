@@ -92,11 +92,16 @@ export class EatseServicesService {
     return new_service;
   }
 
-  async findAll(): Promise<EatseService[]> {
-    const services = await this.eatseServicesModel
-      .find()
-      .select('title name category description photoURL position')
-      .sort([['position', 1]]);
+  async findAll(category?: string): Promise<EatseService[]> {
+    const services = category
+      ? await this.eatseServicesModel
+          .find({ category: category })
+          .select('title name category description photoURL position')
+          .sort([['position', 1]])
+      : await this.eatseServicesModel
+          .find()
+          .select('title name category description photoURL position')
+          .sort([['position', 1]]);
     return services;
   }
 

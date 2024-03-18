@@ -18,12 +18,6 @@ export class NewEaserDto {
   @IsEmpty()
   easerTag: string;
 
-  @IsNotEmpty()
-  accumulatedEarning: number;
-
-  @IsNotEmpty()
-  rating: number;
-
   referralCode: string;
 
   /* @IsEnum(Service)

@@ -17,6 +17,7 @@ import { ConfigService } from '@nestjs/config';
 import { ChangePasswordDto } from './authDto/change-password.dto';
 //import { ResourceCreated } from 'src/shared/resource-created';
 import { PasswordResetToken } from './PasswordResetToken.schema';
+import { Service } from 'src/shared/services.enum';
 
 @Injectable()
 export class AuthService {
@@ -77,6 +78,8 @@ export class AuthService {
 
     user.referralCode =
       'https://eatse.ng/?email=' + user.email + '&phone=' + user.phone;
+    user.easerTag = 'EAS' + this.generateEaserTag();
+    user.service = Service.HOUSEKEEPING;
     user.password = await bcrypt.hash(user.password, 10);
     const new_easer = await this.easerModel.create(user);
     const tokens = await this.generateTokens(new_easer.id, new_easer.email);
@@ -84,11 +87,11 @@ export class AuthService {
       new_easer.id,
       new_easer.email,
     );
-    await this.clientModel.findByIdAndUpdate(
+    /* await this.easerModel.findByIdAndUpdate(
       new_easer.id,
       { refreshToken: tokens.refresh_token },
       { upsert: true, new: true },
-    );
+    ); */
     await this.mailService.sendUserRegistrationConfirmation(
       new_easer,
       email_verification_token,
@@ -105,7 +108,10 @@ export class AuthService {
       throw new UnauthorizedException('user not found!');
     }
 
-    const hashed_password = await bcrypt.compare(user.password, client.password);
+    const hashed_password = await bcrypt.compare(
+      user.password,
+      client.password,
+    );
 
     if (!hashed_password) {
       throw new UnauthorizedException('email or password is incorrect!');
@@ -192,6 +198,16 @@ export class AuthService {
 
   async resendEmailVerificationToken() {
     //const email_verification_token = this.generateEmailToken()
+  }
+
+  async generateEaserTag() {
+    const id = [];
+    for (let i = 0; i < 5; i++) {
+      const val = Math.floor(Math.random() * (10 - 1)) + 1;
+      id.push(val);
+    }
+    console.log(id.join(''));
+    return id.join('');
   }
 
   async generateTokens(id: string, email: string) {
@@ -446,6 +462,7 @@ export class AuthService {
   }
 
   async refreshToken(token: string) {
+    console.log('refreshtoken => ', token);
     const decoded = this.jwtService.decode(token);
 
     if (!decoded) {
@@ -470,13 +487,15 @@ export class AuthService {
 
     const tokens = await this.generateTokens(client.id, client.email);
 
-    client.refreshToken = tokens.refresh_token;
+    const updated_refresh_token = await this.clientModel.findByIdAndUpdate(
+      client.id,
+      { refreshToken: tokens.refresh_token },
+      { upsert: true, new: true },
+    );
     return tokens;
   }
 
-  async refreshEaserToken() {
-
-  }
+  async refreshEaserToken() {}
 
   async logoutUser() {
     return;

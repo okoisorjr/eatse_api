@@ -24,10 +24,10 @@ export class Easer {
   @Prop({ required: true })
   phone: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, default: 0 })
   accumulatedEarning: number;
 
-  @Prop()
+  @Prop({ required: true, default: 0 })
   rating: number;
 
   @Prop()
