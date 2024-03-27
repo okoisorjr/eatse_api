@@ -22,6 +22,9 @@ export class Address {
 
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Client' || 'Easer'})
   user: string;
+
+  @Prop({ required: true, default: false})
+  default: boolean;
 }
 
 export const AddressSchema = SchemaFactory.createForClass(Address);

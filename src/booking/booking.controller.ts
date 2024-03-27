@@ -26,12 +26,13 @@ export class BookingController {
     return this.bookingService.saveNewBooking(body);
   }
 
+  
   @Put('assign_easer')
   assignBookingEaser(@Body() data: UpdateBookingEaserDto) {
     return this.bookingService.assignEaserToBooking(data);
   }
 
-  //@UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   @Get() // retrieves all the bookings from the database
   retrieveBookings(@Query() query: number) {
     if (query) {
@@ -53,16 +54,19 @@ export class BookingController {
     return this.bookingService.getAllBookingsCleanedForToday();
   }
 
+  @UseGuards(AuthGuard)
   @Get('client/:client_id/bookings')
   async getClientBookings(@Param('client_id') client_id: string) {
     return await this.bookingService.getAllClientsBooking(client_id);
   }
 
+  @UseGuards(AuthGuard)
   @Get('client/:client_id/bookings/active')
   async getClientActiveBookings(@Param('client_id') client_id: string) {
     return await this.bookingService.getAllClientsActiveBooking(client_id);
   }
 
+  @UseGuards(AuthGuard)
   @Put(':booking_id/cancel')
   cancelBooking(
     @Param('booking_id') booking_id: string,

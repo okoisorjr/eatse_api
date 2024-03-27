@@ -6,11 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { RoomPricesService } from './room-prices.service';
 import { CreateRoomPriceDto } from './dto/create-room-price.dto';
 import { UpdateRoomPriceDto } from './dto/update-room-price.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('room-prices')
 export class RoomPricesController {
   constructor(private readonly roomPricesService: RoomPricesService) {}

@@ -99,6 +99,19 @@ export class AuthService {
     return { id: new_easer.id };
   }
 
+  async getClientAccount(data: string) {
+    const user_account = await this.clientModel.find({ phone: data }).select('firstname lastname email phone profile_pic');
+
+    if (!user_account) {
+      throw new HttpException(
+        'No account with the provided phone or email was found!',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    console.log(user_account);
+    return user_account;
+  }
+
   async validateUser(user) {
     const client = await this.clientModel.findOne({
       $or: [{ email: user.username }, { phone: user.username }],
@@ -216,7 +229,7 @@ export class AuthService {
         { sub: id, email },
         {
           secret: this.configService.get('ACCESS_TOKEN_SECRET'),
-          expiresIn: 900,
+          expiresIn: '900s',
         },
       ),
       this.jwtService.signAsync(
@@ -462,7 +475,6 @@ export class AuthService {
   }
 
   async refreshToken(token: string) {
-    console.log('refreshtoken => ', token);
     const decoded = this.jwtService.decode(token);
 
     if (!decoded) {
@@ -497,7 +509,27 @@ export class AuthService {
 
   async refreshEaserToken() {}
 
-  async logoutUser() {
-    return;
+  async logoutUser(token: string) {
+    const decoded = this.jwtService.decode(token);
+
+    if (!decoded) {
+      throw new HttpException('invalid user token!', HttpStatus.UNAUTHORIZED);
+    }
+
+    try {
+      await this.clientModel.findOneAndUpdate(
+        { _id: decoded.sub },
+        { refresh_token: null },
+        { upsert: true, new: true },
+      );
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'User cannot be found temporarily!',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return { msg: 'logged out successfully!', status: HttpStatus.OK };
   }
 }

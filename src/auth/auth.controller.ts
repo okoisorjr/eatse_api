@@ -58,6 +58,12 @@ export class AuthController {
     //response.status(200).cookie('jwt', accessToken);
   }
 
+  @Post('get-account/:data')
+  async getAccount(@Param('data') data: string) {
+    console.log('phone no => ', data);
+    return await this.authService.getClientAccount(data);
+  }
+
   @Post('verify-client-email/:token')
   async verifyClientEmail(
     @Param('token') token: string,
@@ -109,9 +115,9 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('signout-client')
-  async logoutClient() {
-    return this.authService.logoutUser();
+  @Get('signout-client/:token')
+  async logoutClient(@Param('token') token: string) {
+    return this.authService.logoutUser(token);
   }
 
   @UseGuards(AuthGuard)
@@ -120,15 +126,15 @@ export class AuthController {
     return this.authService.updateClientPassword(body);
   }
 
-  @UseGuards(RefreshTokenGuard)
-  @Post('refresh-token/:token')
+  //@UseGuards(RefreshTokenGuard)
+  @Get('refresh-token/:token')
   async refreshToken(@Param('token') token: string) {
     return this.authService.refreshToken(token);
   }
 
   @UseGuards(AuthGuard)
-  @Post('signout-easer')
-  async logoutEaser() {
-    return this.authService.logoutUser();
+  @Get('signout-easer/:token')
+  async logoutEaser(@Param('token') token: string)  {
+    return this.authService.logoutUser(token);
   }
 }
